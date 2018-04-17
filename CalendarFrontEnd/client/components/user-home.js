@@ -12,12 +12,12 @@ export const UserHome = (props) => {
     <div>
       <h3>Welcome, {email}</h3>
       <div className="month">
-        <ul>
+        <ul className = 'monthContent'>
           <li className="prev">&#10094;</li>
-          <li className="next">&#10095;</li>
-          <li className = 'calendarHeader'>
+          <h1 className = 'calendarHead'>
             August 2017
-          </li>
+          </h1>
+          <li className="next">&#10095;</li>
         </ul>
       </div>
 

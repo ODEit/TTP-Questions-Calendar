@@ -365,13 +365,15 @@ var UserHome = function UserHome(props) {
   var email = props.email;
   return _react.default.createElement("div", null, _react.default.createElement("h3", null, "Welcome, ", email), _react.default.createElement("div", {
     className: "month"
-  }, _react.default.createElement("ul", null, _react.default.createElement("li", {
+  }, _react.default.createElement("ul", {
+    className: "monthContent"
+  }, _react.default.createElement("li", {
     className: "prev"
-  }, "\u276E"), _react.default.createElement("li", {
+  }, "\u276E"), _react.default.createElement("h1", {
+    className: "calendarHead"
+  }, "August 2017"), _react.default.createElement("li", {
     className: "next"
-  }, "\u276F"), _react.default.createElement("li", {
-    className: "calendarHeader"
-  }, "August 2017"))), _react.default.createElement("ul", {
+  }, "\u276F"))), _react.default.createElement("ul", {
     className: "weekdays"
   }, _react.default.createElement("li", null, "Mo"), _react.default.createElement("li", null, "Tu"), _react.default.createElement("li", null, "We"), _react.default.createElement("li", null, "Th"), _react.default.createElement("li", null, "Fr"), _react.default.createElement("li", null, "Sa"), _react.default.createElement("li", null, "Su")), _react.default.createElement("ul", {
     className: "days"
