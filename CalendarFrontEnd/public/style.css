@@ -42,23 +42,25 @@ body {font-family: Verdana, sans-serif;}
 
 /* Previous button inside month header */
 .month .prev {
-    padding-top: 10px;
+    font-size: 2.2rem;
+    align-self: center;
     transition: all .5s ease;
 }
 
 .month .prev:hover{
-  font-size: 2.5em;
+  font-size: 3.2rem;
   color: black;
 }
 
 /* Next button */
 .month .next {
-    padding-top: 10px;
-    transition: all .5s ease;    
+  font-size: 2.2rem;  
+  align-self: center;
+  transition: all .5s ease;    
 }
 
 .month .next:hover{
-  font-size: 2.5em;
+  font-size: 3.2rem;
   color: black;
 }
 /* Weekdays (Mon-Sun) */
@@ -106,16 +108,38 @@ body {font-family: Verdana, sans-serif;}
 .days{
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(5, 5rem)
+  grid-template-rows: repeat(5, 5rem);
+  padding-left:0;
 }
 
-.days li{
+.days .daysEntry{
   text-align: left;
   font-size: 1.2rem;
   transition: all .3s ease
 }
 
-.days li:hover{
+.days .daysEntry:hover{
   background-color: var(--main-theme);
   color:white
+}
+
+.modal{
+  display: none;
+  color:cornflowerblue;
+  display: none;
+  position: fixed; /* Stay in place */
+  /* z-index: 1; Sit on top */
+  left: 25vw;
+  top: 25vh;
+  width: 50vw; /* Full width */
+  height: 50vh; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color:white;
+  opacity: 0.8;
+  border-radius: 5%;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between
 }

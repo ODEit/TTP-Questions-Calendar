@@ -103,6 +103,117 @@ exports.default = _default;
 
 /***/ }),
 
+/***/ "./CalendarFrontEnd/client/components/Appointments.js":
+/*!************************************************************!*\
+  !*** ./CalendarFrontEnd/client/components/Appointments.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Appointments =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(Appointments, _Component);
+
+  function Appointments(props) {
+    var _this;
+
+    _classCallCheck(this, Appointments);
+
+    _this = _possibleConstructorReturn(this, (Appointments.__proto__ || Object.getPrototypeOf(Appointments)).call(this, props));
+    _this.state = {
+      appointments: []
+    };
+    return _this;
+  }
+
+  _createClass(Appointments, [{
+    key: "render",
+    value: function render() {
+      return _react.default.createElement("div", null, "I'm a thing?");
+    }
+  }]);
+
+  return Appointments;
+}(_react.Component);
+
+exports.default = Appointments;
+
+/***/ }),
+
+/***/ "./CalendarFrontEnd/client/components/DayPage.js":
+/*!*******************************************************!*\
+  !*** ./CalendarFrontEnd/client/components/DayPage.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+
+var _Appointments = _interopRequireDefault(__webpack_require__(/*! ./Appointments */ "./CalendarFrontEnd/client/components/Appointments.js"));
+
+var _this = void 0;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var dayPage = function dayPage(props) {
+  function handleClose(event) {
+    var modal = document.getElementById("modal".concat(props.day));
+    modal.style.display = 'none';
+    return console.log('done');
+  }
+
+  return _react.default.createElement("div", {
+    className: "modal",
+    id: "modal".concat(props.day)
+  }, _react.default.createElement("div", {
+    className: "modalHeader"
+  }, _react.default.createElement("span", null, props.day), _react.default.createElement("span", {
+    onClick: handleClose.bind(_this)
+  }, "X")), _react.default.createElement(_Appointments.default, {
+    props: props.day
+  }));
+};
+
+var _default = dayPage;
+exports.default = _default;
+
+/***/ }),
+
 /***/ "./CalendarFrontEnd/client/components/auth-form.js":
 /*!*********************************************************!*\
   !*** ./CalendarFrontEnd/client/components/auth-form.js ***!
@@ -356,6 +467,10 @@ var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ ".
 
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
+var _DayPage = _interopRequireDefault(__webpack_require__(/*! ./DayPage */ "./CalendarFrontEnd/client/components/DayPage.js"));
+
+var _this = void 0;
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -363,6 +478,37 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 var UserHome = function UserHome(props) {
   var email = props.email;
+  var presentDate = new Date();
+  var presentDateString = new Date().toString();
+  presentDateString = presentDateString.slice(0, presentDateString.indexOf(':') - 2);
+  console.log(presentDateString);
+  var checkDate = "".concat(presentDate.getFullYear(), ", ").concat(presentDate.getMonth() + 1, ", 1");
+  var start = new Date(checkDate).getDay();
+  console.log(start);
+  console.log(checkDate);
+  var days = [];
+
+  for (var i = 0, j = 1; i < 35; i++) {
+    if (i < start) {
+      days.push(31 - start + i);
+    } else {
+      j = j % 31;
+      if (j === 0) j = 31;
+      days.push(j);
+      j++;
+    }
+  }
+
+  console.log(days);
+
+  function handleModal(event) {
+    var day = event.target.dataset.day;
+    var modal = document.getElementById("modal".concat(day));
+    console.log(modal);
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
+  }
+
   return _react.default.createElement("div", null, _react.default.createElement("h3", null, "Welcome, ", email), _react.default.createElement("div", {
     className: "month"
   }, _react.default.createElement("ul", {
@@ -371,15 +517,24 @@ var UserHome = function UserHome(props) {
     className: "prev"
   }, "\u276E"), _react.default.createElement("h1", {
     className: "calendarHead"
-  }, "August 2017"), _react.default.createElement("li", {
+  }, presentDateString), _react.default.createElement("li", {
     className: "next"
   }, "\u276F"))), _react.default.createElement("ul", {
     className: "weekdays"
-  }, _react.default.createElement("li", null, "Mo"), _react.default.createElement("li", null, "Tu"), _react.default.createElement("li", null, "We"), _react.default.createElement("li", null, "Th"), _react.default.createElement("li", null, "Fr"), _react.default.createElement("li", null, "Sa"), _react.default.createElement("li", null, "Su")), _react.default.createElement("ul", {
+  }, _react.default.createElement("li", null, "Su"), _react.default.createElement("li", null, "Mo"), _react.default.createElement("li", null, "Tu"), _react.default.createElement("li", null, "We"), _react.default.createElement("li", null, "Th"), _react.default.createElement("li", null, "Fr"), _react.default.createElement("li", null, "Sa")), _react.default.createElement("ul", {
     className: "days"
-  }, _react.default.createElement("li", null, "1"), _react.default.createElement("li", null, "2"), _react.default.createElement("li", null, "3"), _react.default.createElement("li", null, "4"), _react.default.createElement("li", null, "5"), _react.default.createElement("li", null, "6"), _react.default.createElement("li", null, "7"), _react.default.createElement("li", null, "8"), _react.default.createElement("li", null, "9"), _react.default.createElement("li", null, _react.default.createElement("span", {
-    className: "active"
-  }, "10")), _react.default.createElement("li", null, "11"), _react.default.createElement("li", null, "12"), _react.default.createElement("li", null, "13"), _react.default.createElement("li", null, "14"), _react.default.createElement("li", null, "15"), _react.default.createElement("li", null, "16"), _react.default.createElement("li", null, "17"), _react.default.createElement("li", null, "18"), _react.default.createElement("li", null, "19"), _react.default.createElement("li", null, "20"), _react.default.createElement("li", null, "21"), _react.default.createElement("li", null, "22"), _react.default.createElement("li", null, "23"), _react.default.createElement("li", null, "24"), _react.default.createElement("li", null, "25"), _react.default.createElement("li", null, "26"), _react.default.createElement("li", null, "27"), _react.default.createElement("li", null, "28"), _react.default.createElement("li", null, "29"), _react.default.createElement("li", null, "30"), _react.default.createElement("li", null, "31")));
+  }, days.length === 35 && days.map(function (day, key) {
+    return _react.default.createElement("div", {
+      key: key,
+      "data-day": day,
+      onClick: handleModal.bind(_this),
+      className: "daysEntry"
+    }, _react.default.createElement("li", {
+      "data-day": day
+    }, day), _react.default.createElement(_DayPage.default, {
+      day: day
+    }));
+  })));
 };
 /**
  * CONTAINER
