@@ -4,6 +4,7 @@ import Appointments from './Appointments'
 const dayPage = (props) => {
 
     function handleClose (event){
+        event.stopPropagation()
         let modal = document.getElementById(`modal${props.day}`)
         modal.style.display = 'none'
         return console.log('done')

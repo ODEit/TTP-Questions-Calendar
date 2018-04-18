@@ -192,6 +192,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var dayPage = function dayPage(props) {
   function handleClose(event) {
+    event.stopPropagation();
     var modal = document.getElementById("modal".concat(props.day));
     modal.style.display = 'none';
     return console.log('done');
@@ -459,9 +460,9 @@ Navbar.propTypes = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.UserHome = void 0;
+exports.default = void 0;
 
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 
 var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js"));
 
@@ -469,79 +470,191 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _DayPage = _interopRequireDefault(__webpack_require__(/*! ./DayPage */ "./CalendarFrontEnd/client/components/DayPage.js"));
 
-var _this = void 0;
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 /**
  * COMPONENT
  */
-var UserHome = function UserHome(props) {
-  var email = props.email;
-  var presentDate = new Date();
-  var presentDateString = new Date().toString();
-  presentDateString = presentDateString.slice(0, presentDateString.indexOf(':') - 2);
-  console.log(presentDateString);
-  var checkDate = "".concat(presentDate.getFullYear(), ", ").concat(presentDate.getMonth() + 1, ", 1");
-  var start = new Date(checkDate).getDay();
-  console.log(start);
-  console.log(checkDate);
-  var days = [];
+var UserHome =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(UserHome, _Component);
 
-  for (var i = 0, j = 1; i < 35; i++) {
-    if (i < start) {
-      days.push(31 - start + i);
-    } else {
-      j = j % 31;
-      if (j === 0) j = 31;
-      days.push(j);
-      j++;
+  function UserHome() {
+    var _this;
+
+    _classCallCheck(this, UserHome);
+
+    _this = _possibleConstructorReturn(this, (UserHome.__proto__ || Object.getPrototypeOf(UserHome)).call(this));
+    _this.state = {
+      presentDate: {},
+      presentDateString: "",
+      checkDate: '',
+      start: '',
+      days: [],
+      months: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    };
+    _this.handleModal = _this.handleModal.bind(_assertThisInitialized(_this));
+    _this.handleDate = _this.handleDate.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(UserHome, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var presentDate = new Date();
+      var presentDateString = new Date().toString();
+      presentDateString = presentDateString.slice(0, presentDateString.indexOf(':') - 2);
+      var checkDate = "".concat(presentDate.getFullYear(), ", ").concat(presentDate.getMonth() + 1, ", 1");
+      checkDate = new Date(checkDate);
+      var start = checkDate.getDay();
+      var days = [];
+      var month = checkDate.getMonth();
+      var daysInMonth = this.state.months[month];
+
+      for (var i = 0, j = 1; i < 35; i++) {
+        if (i < start) {
+          days.push(daysInMonth - start + i);
+        } else {
+          j = j % daysInMonth;
+          if (j === 0) j = daysInMonth;
+          days.push(j);
+          j++;
+        }
+      }
+
+      this.setState({
+        presentDate: presentDate,
+        presentDateString: presentDateString,
+        checkDate: checkDate,
+        start: start,
+        days: days
+      });
+      console.log(presentDateString);
+      console.log(start);
+      console.log(checkDate);
+      console.log(days);
     }
-  }
+  }, {
+    key: "handleModal",
+    value: function handleModal(event) {
+      var day = event.target.dataset.day;
+      var modal = document.getElementById("modal".concat(day));
+      console.log(modal);
+      modal.style.display = 'flex';
+      modal.style.flexDirection = 'column';
+    }
+  }, {
+    key: "handleDate",
+    value: function handleDate(event) {
+      event.preventDefault();
+      var year = event.target.year.value;
+      var newMonth = event.target.month.value;
+      console.log(year, newMonth);
+      var date = new Date("".concat(year, ", ").concat(newMonth, ", 1"));
+      var start = date.getDay();
+      var month = date.getMonth();
+      var daysInMonth = this.state.months[month];
+      console.log(start);
+      var days = [];
 
-  console.log(days);
+      for (var i = 0, j = 1; i < 35; i++) {
+        if (i < start) {
+          days.push(daysInMonth - start + i);
+        } else {
+          j = j % daysInMonth;
+          if (j === 0) j = daysInMonth;
+          days.push(j);
+          j++;
+        }
+      }
 
-  function handleModal(event) {
-    var day = event.target.dataset.day;
-    var modal = document.getElementById("modal".concat(day));
-    console.log(modal);
-    modal.style.display = 'flex';
-    modal.style.flexDirection = 'column';
-  }
+      console.log(days);
+      this.setState({
+        days: days
+      });
+    }
+  }, {
+    key: "handleArrow",
+    value: function handleArrow(event) {
+      if (event.target.className === 'next') {//current month and year needed.
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
 
-  return _react.default.createElement("div", null, _react.default.createElement("h3", null, "Welcome, ", email), _react.default.createElement("div", {
-    className: "month"
-  }, _react.default.createElement("ul", {
-    className: "monthContent"
-  }, _react.default.createElement("li", {
-    className: "prev"
-  }, "\u276E"), _react.default.createElement("h1", {
-    className: "calendarHead"
-  }, presentDateString), _react.default.createElement("li", {
-    className: "next"
-  }, "\u276F"))), _react.default.createElement("ul", {
-    className: "weekdays"
-  }, _react.default.createElement("li", null, "Su"), _react.default.createElement("li", null, "Mo"), _react.default.createElement("li", null, "Tu"), _react.default.createElement("li", null, "We"), _react.default.createElement("li", null, "Th"), _react.default.createElement("li", null, "Fr"), _react.default.createElement("li", null, "Sa")), _react.default.createElement("ul", {
-    className: "days"
-  }, days.length === 35 && days.map(function (day, key) {
-    return _react.default.createElement("div", {
-      key: key,
-      "data-day": day,
-      onClick: handleModal.bind(_this),
-      className: "daysEntry"
-    }, _react.default.createElement("li", {
-      "data-day": day
-    }, day), _react.default.createElement(_DayPage.default, {
-      day: day
-    }));
-  })));
-};
+      return _react.default.createElement("div", null, _react.default.createElement("form", {
+        onSubmit: this.handleDate
+      }, _react.default.createElement("span", null, "Year: "), _react.default.createElement("input", {
+        type: "number",
+        min: "1",
+        name: "year"
+      }), _react.default.createElement("span", null, "Month: "), _react.default.createElement("input", {
+        type: "number",
+        min: "1",
+        max: "12",
+        name: "month"
+      }), _react.default.createElement("button", {
+        type: "submit"
+      }, "submit")), _react.default.createElement("div", {
+        className: "month"
+      }, _react.default.createElement("ul", {
+        className: "monthContent"
+      }, _react.default.createElement("li", {
+        className: "prev",
+        onClick: function onClick() {
+          return console.log('placeholder');
+        }
+      }, "\u276E"), _react.default.createElement("h1", {
+        className: "calendarHead"
+      }, this.state.presentDateString), _react.default.createElement("li", {
+        className: "next",
+        onClick: function onClick() {
+          return console.log('placeholder');
+        }
+      }, "\u276F"))), _react.default.createElement("ul", {
+        className: "weekdays"
+      }, _react.default.createElement("li", null, "Su"), _react.default.createElement("li", null, "Mo"), _react.default.createElement("li", null, "Tu"), _react.default.createElement("li", null, "We"), _react.default.createElement("li", null, "Th"), _react.default.createElement("li", null, "Fr"), _react.default.createElement("li", null, "Sa")), _react.default.createElement("ul", {
+        className: "days"
+      }, this.state.days.length === 35 && this.state.days.map(function (day, key) {
+        return _react.default.createElement("div", {
+          key: key,
+          "data-day": day,
+          onClick: _this2.handleModal,
+          className: "daysEntry"
+        }, _react.default.createElement("li", {
+          "data-day": day
+        }, day), _react.default.createElement(_DayPage.default, {
+          day: day
+        }));
+      })));
+    }
+  }]);
+
+  return UserHome;
+}(_react.Component);
 /**
  * CONTAINER
  */
 
-
-exports.UserHome = UserHome;
 
 var mapState = function mapState(state) {
   return {
