@@ -120,50 +120,44 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+var Appointments = function Appointments(props) {
+  console.log(props);
+  var day = props.day,
+      appointments = props.appointments;
+  console.log(appointments);
+  appointments = appointments.filter(function (appointment) {
+    return day == appointment.day;
+  });
+  console.log(appointments);
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Appointments =
-/*#__PURE__*/
-function (_Component) {
-  _inherits(Appointments, _Component);
-
-  function Appointments(props) {
-    var _this;
-
-    _classCallCheck(this, Appointments);
-
-    _this = _possibleConstructorReturn(this, (Appointments.__proto__ || Object.getPrototypeOf(Appointments)).call(this, props));
-    _this.state = {
-      appointments: []
-    };
-    return _this;
+  function handleDelete(id) {
+    _axios.default.delete("/api/appointments/".concat(id));
   }
 
-  _createClass(Appointments, [{
-    key: "render",
-    value: function render() {
-      return _react.default.createElement("div", null, "I'm a thing?");
-    }
-  }]);
+  return _react.default.createElement("div", {
+    className: "appointment"
+  }, appointments.length ? appointments.map(function (appointment) {
+    return _react.default.createElement("div", {
+      className: "appointment-content"
+    }, _react.default.createElement("span", null, "Time holder"), _react.default.createElement("div", {
+      className: "appointment-description"
+    }, appointment.description, " ", props.modal && _react.default.createElement("button", {
+      type: "delete",
+      onClick: function onClick() {
+        return handleDelete(appointment.id);
+      }
+    }, "x")));
+  }) : null);
+};
 
-  return Appointments;
-}(_react.Component);
-
-exports.default = Appointments;
+var _default = Appointments;
+exports.default = _default;
 
 /***/ }),
 
@@ -184,6 +178,8 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+
 var _Appointments = _interopRequireDefault(__webpack_require__(/*! ./Appointments */ "./CalendarFrontEnd/client/components/Appointments.js"));
 
 var _this = void 0;
@@ -198,15 +194,73 @@ var dayPage = function dayPage(props) {
     return console.log('done');
   }
 
+  function handleSubmit(event) {
+    event.preventDefault();
+    var _event$target = event.target,
+        description = _event$target.description,
+        endHour = _event$target.endHour,
+        endMin = _event$target.endMin,
+        startHour = _event$target.startHour,
+        startMin = _event$target.startMin;
+
+    _axios.default.post('/api/appointments', {
+      year: 2018,
+      month: 4,
+      day: props.day,
+      description: description.value
+    });
+  }
+
   return _react.default.createElement("div", {
     className: "modal",
     id: "modal".concat(props.day)
   }, _react.default.createElement("div", {
-    className: "modalHeader"
-  }, _react.default.createElement("span", null, props.day), _react.default.createElement("span", {
+    className: "modal-header"
+  }, _react.default.createElement("span", {
+    className: "modal-date"
+  }, props.day), _react.default.createElement("span", {
+    className: "modal-close",
     onClick: handleClose.bind(_this)
-  }, "X")), _react.default.createElement(_Appointments.default, {
-    props: props.day
+  }, "X")), _react.default.createElement("form", {
+    className: "create-appointment",
+    onSubmit: handleSubmit.bind(_this)
+  }, _react.default.createElement("div", null, _react.default.createElement("span", null, "Start Time: "), _react.default.createElement("input", {
+    name: "startHour",
+    type: "number",
+    max: "12",
+    min: "1"
+  }), _react.default.createElement("span", null, ":"), _react.default.createElement("input", {
+    name: "startMin",
+    type: "number",
+    max: "60",
+    min: "0"
+  }), _react.default.createElement("select", null, _react.default.createElement("option", {
+    value: "AM"
+  }, "AM"), _react.default.createElement("option", {
+    value: "PM"
+  }, "PM"))), _react.default.createElement("div", null, _react.default.createElement("span", null, "End Time: "), _react.default.createElement("input", {
+    name: "endHour",
+    type: "number",
+    max: "12",
+    min: "1"
+  }), _react.default.createElement("span", null, ":"), _react.default.createElement("input", {
+    name: "endMin",
+    type: "number",
+    max: "60",
+    min: "0"
+  }), _react.default.createElement("select", null, _react.default.createElement("option", {
+    value: "AM"
+  }, "AM"), _react.default.createElement("option", {
+    value: "PM"
+  }, "PM"))), _react.default.createElement("span", null, "Description "), _react.default.createElement("textarea", {
+    name: "description",
+    className: "create-appointment-description"
+  }), _react.default.createElement("button", {
+    type: "submit"
+  }, "submit")), _react.default.createElement(_Appointments.default, {
+    day: props.day,
+    appointments: props.appointments,
+    modal: true
   }));
 };
 
@@ -464,11 +518,15 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+
 var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js"));
 
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
 var _DayPage = _interopRequireDefault(__webpack_require__(/*! ./DayPage */ "./CalendarFrontEnd/client/components/DayPage.js"));
+
+var _Appointments = _interopRequireDefault(__webpack_require__(/*! ./Appointments */ "./CalendarFrontEnd/client/components/Appointments.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -508,7 +566,8 @@ function (_Component) {
       checkDate: '',
       start: '',
       days: [],
-      months: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+      months: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+      appointments: []
     };
     _this.handleModal = _this.handleModal.bind(_assertThisInitialized(_this));
     _this.handleDate = _this.handleDate.bind(_assertThisInitialized(_this));
@@ -518,6 +577,8 @@ function (_Component) {
   _createClass(UserHome, [{
     key: "componentDidMount",
     value: function componentDidMount() {
+      var _this2 = this;
+
       var presentDate = new Date();
       var presentDateString = new Date().toString();
       presentDateString = presentDateString.slice(0, presentDateString.indexOf(':') - 2);
@@ -525,6 +586,7 @@ function (_Component) {
       checkDate = new Date(checkDate);
       var start = checkDate.getDay();
       var days = [];
+      var year = checkDate.getFullYear();
       var month = checkDate.getMonth();
       var daysInMonth = this.state.months[month];
 
@@ -539,13 +601,19 @@ function (_Component) {
         }
       }
 
-      this.setState({
-        presentDate: presentDate,
-        presentDateString: presentDateString,
-        checkDate: checkDate,
-        start: start,
-        days: days
+      _axios.default.get("/api/appointments/".concat(year, "-").concat(month + 1)).then(function (appointments) {
+        return appointments.data;
+      }).then(function (appointments) {
+        _this2.setState({
+          presentDate: presentDate,
+          presentDateString: presentDateString,
+          checkDate: checkDate,
+          start: start,
+          days: days,
+          appointments: appointments
+        });
       });
+
       console.log(presentDateString);
       console.log(start);
       console.log(checkDate);
@@ -559,6 +627,7 @@ function (_Component) {
       console.log(modal);
       modal.style.display = 'flex';
       modal.style.flexDirection = 'column';
+      modal.style.justifyContent = 'space-between';
     }
   }, {
     key: "handleDate",
@@ -599,7 +668,7 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       return _react.default.createElement("div", null, _react.default.createElement("form", {
         onSubmit: this.handleDate
@@ -638,12 +707,16 @@ function (_Component) {
         return _react.default.createElement("div", {
           key: key,
           "data-day": day,
-          onClick: _this2.handleModal,
+          onClick: _this3.handleModal,
           className: "daysEntry"
         }, _react.default.createElement("li", {
           "data-day": day
-        }, day), _react.default.createElement(_DayPage.default, {
-          day: day
+        }, day), _react.default.createElement(_Appointments.default, {
+          day: day,
+          appointments: _this3.state.appointments
+        }), _react.default.createElement(_DayPage.default, {
+          day: day,
+          appointments: _this3.state.appointments
         }));
       })));
     }

@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
+import axios from 'axios';
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import DayPage from './DayPage'
+import Appointments from './Appointments';
+
 /**
  * COMPONENT
  */
@@ -14,7 +17,8 @@ class UserHome extends Component {
       checkDate: '',
       start: '',
       days: [],
-      months: [31,28,31,30,31,30,31,31,30,31,30,31]
+      months: [31,28,31,30,31,30,31,31,30,31,30,31],
+      appointments: []
     }
     this.handleModal = this.handleModal.bind(this)
     this.handleDate = this.handleDate.bind(this)
@@ -27,6 +31,7 @@ class UserHome extends Component {
     checkDate = new Date(checkDate)
     let start = checkDate.getDay();
     let days = []
+    let year = checkDate.getFullYear()
     let month = checkDate.getMonth()
     let daysInMonth = this.state.months[month]
     for (let i = 0, j = 1; i < 35; i++) {
@@ -38,13 +43,19 @@ class UserHome extends Component {
         j++
       }
     }
-    this.setState({
-      presentDate: presentDate,
-      presentDateString: presentDateString,
-      checkDate: checkDate,
-      start: start,
-      days: days
-    })
+    axios.get( `/api/appointments/${year}-${month+1}`)
+      .then(appointments => appointments.data)
+      .then((appointments)=> {
+        this.setState({
+        presentDate: presentDate,
+        presentDateString: presentDateString,
+        checkDate: checkDate,
+        start: start,
+        days: days,
+        appointments
+      })})
+    
+    
 
     console.log(presentDateString)
     console.log(start)
@@ -58,6 +69,7 @@ class UserHome extends Component {
     console.log(modal)
     modal.style.display = 'flex'
     modal.style.flexDirection = 'column' 
+    modal.style.justifyContent = 'space-between'
   }
   
   handleDate(event){
@@ -125,7 +137,8 @@ class UserHome extends Component {
               onClick={this.handleModal}
               className="daysEntry">
               <li data-day={day} >{day}</li>
-              <DayPage day={day} />
+              <Appointments day = {day} appointments = {this.state.appointments}/>
+              <DayPage day={day} appointments = {this.state.appointments}/>
             </div>)
           })}
         </ul>

@@ -113,9 +113,13 @@ body {font-family: Verdana, sans-serif;}
 }
 
 .days .daysEntry{
+  position: relative;
+  overflow-y: scroll;
   text-align: left;
   font-size: 1.2rem;
-  transition: all .3s ease
+  transition: all .3s ease;
+  border: .05rem solid;
+  padding: .25rem;
 }
 
 .days .daysEntry:hover{
@@ -128,18 +132,68 @@ body {font-family: Verdana, sans-serif;}
   color:cornflowerblue;
   display: none;
   position: fixed; /* Stay in place */
-  /* z-index: 1; Sit on top */
+  z-index: 1;
   left: 25vw;
   top: 25vh;
   width: 50vw; /* Full width */
-  height: 50vh; /* Full height */
+  height: 20rem; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color:white;
-  opacity: 0.8;
-  border-radius: 5%;
+  opacity: 1;
+  border: .1rem solid black;
 }
 
 .modal-header {
   display: flex;
-  justify-content: space-between
+  margin: .5rem;
+  justify-content: space-between;
+  padding: .3rem;
+}
+
+.modal-date{
+  padding:.3rem;
+}
+
+.modal-close{
+  background: rgb(255, 196, 0);
+  transition: all .2s ease;
+  padding:.3rem;  
+}
+
+.modal-close:hover{
+  color: white;
+}
+
+.create-appointment{
+  background-color:blanchedalmond;
+  color:black;
+  margin:.5rem;
+  padding:.3rem;
+}
+
+.create-appointment-description{
+  width:95%;
+  height: auto;
+}
+
+.appointment {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: cornflowerblue;
+}
+
+.appointment-content{
+  display:flex;
+  flex-direction: column;
+  margin:.5rem;
+}
+
+.appointment-description {
+  display:flex;
+  justify-content: space-between;
+}
+
+.appointment-description button {
+  
 }
