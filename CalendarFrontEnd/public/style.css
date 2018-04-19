@@ -5,7 +5,9 @@
 }
 
 ul {list-style-type: none;}
-body {font-family: Verdana, sans-serif;}
+body {
+  font-family: Verdana, sans-serif;
+  }
 
 
 /* Month header */
@@ -80,11 +82,20 @@ body {font-family: Verdana, sans-serif;}
 /* My styles*/
 
 .headerFlex{
-  display: flex;
+  display:flex;
   justify-content: space-between;
-  text-decoration: none;
   color: lightblue;
-  font-size: 1.5rem;
+  font-size: 2rem;
+  padding:1rem;
+}
+
+.headerFlex img{
+  width:auto;
+  height:2rem;
+}
+
+.headerFlex h1{
+  margin:0;
 }
 
 .headerRight{
@@ -110,6 +121,7 @@ body {font-family: Verdana, sans-serif;}
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(5, 5rem);
   padding-left:0;
+  background-color: white
 }
 
 .days .daysEntry{

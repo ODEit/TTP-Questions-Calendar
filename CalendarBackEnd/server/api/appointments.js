@@ -15,7 +15,7 @@ router.get('/:year-:month', (req ,res ,next) => {
 
 router.post('/',  (req ,res ,next) => {
     Appointment.create(req.body)
-    .then((appointment)=> console.log(JSON.stringify(appointment)))
+    .then((appointment)=> res.json(appointment))
 })
 
 
@@ -40,6 +40,7 @@ router.delete('/:id', (req ,res ,next) => {
             .then(appointment => {
                appointment.destroy()
             })
+            .then(()=> res.sendStatus(200))
             .catch(next)
 })
 

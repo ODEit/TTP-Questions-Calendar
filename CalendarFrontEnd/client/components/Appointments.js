@@ -1,27 +1,42 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import { connect } from 'react-redux'
+
+import { removeAppointmentThunk } from '../store'
 
 const Appointments = (props) => {
-    console.log(props)
-    let {day,appointments} = props
-    console.log(appointments)
-    appointments = appointments.filter(appointment => day == appointment.day )
-    console.log(appointments)
-    function handleDelete(id){
-        axios.delete(`/api/appointments/${id}`)
-    }
-        return (
-            <div className = 'appointment'>
-                {appointments.length ? appointments.map(appointment => {
-                    return <div className = 'appointment-content'>
-                    <span>Time holder</span>
-                    <div className = 'appointment-description' >{appointment.description} {props.modal && <button type = 'delete' onClick = {()=> handleDelete(appointment.id)} >x</button> }</div>
-                    </div>
-                }):
-                null
-                }
-            </div>
-        )
-    }
+    let { day, appointments, handleDelete, modal } = props
+    appointments = appointments.filter(appointment => day == appointment.day)
 
-export default Appointments
+    return (
+        <div className='appointment'>
+            {appointments.length ? appointments.map((appointment, key) => {
+                return <div className='appointment-content' key={key}>
+                    <span>Time holder</span>
+                    <div className='appointment-description' >{appointment.description} 
+                    {props.from && <button type='delete' onClick={() => handleDelete(appointment.id)} >x
+                    </button>}
+                    </div>
+                </div>
+            }) :
+                null
+            }
+        </div>
+    )
+}
+
+const mapState = (state) => {
+    return {
+        appointments: state.calendar.appointments,
+        modal: state.calendar.modal
+    }
+}
+const mapDispatch = (dispatch) => {
+    return {
+        handleDelete(id) {
+            dispatch(removeAppointmentThunk(id))
+        }
+    }
+}
+
+export default connect(mapState, mapDispatch)(Appointments)
