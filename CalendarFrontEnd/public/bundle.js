@@ -126,6 +126,8 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _store = __webpack_require__(/*! ../store */ "./CalendarFrontEnd/client/store/index.js");
 
+var _utility = __webpack_require__(/*! ../utility */ "./CalendarFrontEnd/client/utility.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
@@ -134,9 +136,13 @@ var Appointments = function Appointments(props) {
   var day = props.day,
       appointments = props.appointments,
       handleDelete = props.handleDelete,
-      modal = props.modal;
+      modal = props.modal,
+      month = props.month;
   appointments = appointments.filter(function (appointment) {
-    return day == appointment.day;
+    return day[0] == appointment.day && day[1] == appointment.year && day[2] == appointment.month;
+  });
+  appointments = appointments.sort(function (a, b) {
+    return (0, _utility.getTimeStart)(a) - (0, _utility.getTimeStart)(b);
   });
   return _react.default.createElement("div", {
     className: "appointment"
@@ -144,8 +150,12 @@ var Appointments = function Appointments(props) {
     return _react.default.createElement("div", {
       className: "appointment-content",
       key: key
-    }, _react.default.createElement("span", null, "Time holder"), _react.default.createElement("div", {
-      className: "appointment-description"
+    }, _react.default.createElement("span", {
+      className: "appointment-time",
+      "data-day": day
+    }, appointment.time), _react.default.createElement("div", {
+      className: "appointment-description",
+      "data-day": day
     }, appointment.description, props.from && _react.default.createElement("button", {
       type: "delete",
       onClick: function onClick() {
@@ -158,7 +168,8 @@ var Appointments = function Appointments(props) {
 var mapState = function mapState(state) {
   return {
     appointments: state.calendar.appointments,
-    modal: state.calendar.modal
+    modal: state.calendar.modal,
+    month: state.calendar.month
   };
 };
 
@@ -201,6 +212,8 @@ var _Appointments = _interopRequireDefault(__webpack_require__(/*! ./Appointment
 
 var _store = __webpack_require__(/*! ../store */ "./CalendarFrontEnd/client/store/index.js");
 
+var _utility = __webpack_require__(/*! ../utility */ "./CalendarFrontEnd/client/utility.js");
+
 var _this = void 0;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -221,7 +234,7 @@ var dayPage = function dayPage(props) {
     className: "modal-header"
   }, _react.default.createElement("span", {
     className: "modal-date"
-  }, props.day), _react.default.createElement("span", {
+  }, "".concat(props.day[0], "/").concat(props.day[2], "/").concat(props.day[1])), _react.default.createElement("span", {
     className: "modal-close",
     onClick: handleClose.bind(_this)
   }, "X")), _react.default.createElement("form", {
@@ -229,6 +242,8 @@ var dayPage = function dayPage(props) {
     onSubmit: function onSubmit(event) {
       return props.handleAddAppointment(event, props);
     }
+  }, _react.default.createElement("div", {
+    className: "create-appointment-time"
   }, _react.default.createElement("div", null, _react.default.createElement("span", null, "Start Time: "), _react.default.createElement("input", {
     name: "startHour",
     type: "number",
@@ -239,7 +254,9 @@ var dayPage = function dayPage(props) {
     type: "number",
     max: "60",
     min: "0"
-  }), _react.default.createElement("select", null, _react.default.createElement("option", {
+  }), _react.default.createElement("select", {
+    name: "start"
+  }, _react.default.createElement("option", {
     value: "AM"
   }, "AM"), _react.default.createElement("option", {
     value: "PM"
@@ -253,11 +270,13 @@ var dayPage = function dayPage(props) {
     type: "number",
     max: "60",
     min: "0"
-  }), _react.default.createElement("select", null, _react.default.createElement("option", {
+  }), _react.default.createElement("select", {
+    name: "end"
+  }, _react.default.createElement("option", {
     value: "AM"
   }, "AM"), _react.default.createElement("option", {
     value: "PM"
-  }, "PM"))), _react.default.createElement("span", null, "Description "), _react.default.createElement("textarea", {
+  }, "PM")))), _react.default.createElement("span", null, "Description "), _react.default.createElement("textarea", {
     name: "description",
     className: "create-appointment-description"
   }), _react.default.createElement("button", {
@@ -289,12 +308,29 @@ var mapDispatch = function mapDispatch(dispatch) {
           endHour = _event$target.endHour,
           endMin = _event$target.endMin,
           startHour = _event$target.startHour,
-          startMin = _event$target.startMin;
+          startMin = _event$target.startMin,
+          start = _event$target.start,
+          end = _event$target.end;
+      if (!endMin.value || !endHour.value || !startHour.value || !startMin.value || !start.value || !end.value) return alert('Time not fully filled out');
+
+      if (start.value === 'PM' && end.value === 'AM') {
+        return alert('start and end time are impossible');
+      } else if (start.value === end.value) {
+        if (parseInt(startHour.value) % 12 > parseInt(endHour.value) % 12) {
+          return alert('start and end time are impossible');
+        } else if (parseInt(startHour.value) === parseInt(endHour.value) && parseInt(startMin.value) > parseInt(endMin.value)) {
+          return alert('start and end time are impossible');
+        }
+      }
+
+      var time = (0, _utility.creatingTimeString)(startHour, startMin, start, endHour, endMin, end);
+      console.log(time, ' , ', time.length, time.slice(0, 8));
       var body = {
-        year: props.year,
-        month: props.month,
-        day: props.day,
-        description: description.value
+        year: props.day[1],
+        month: props.day[2],
+        day: props.day[0],
+        description: description.value,
+        time: time
       };
       dispatch((0, _store.addAppointmentThunk)(body));
     }
@@ -620,24 +656,20 @@ function (_Component) {
       var start = checkDate.getDay();
       this.props.handleMonth(month + 1);
       this.props.handleYear(year);
-      this.props.handleAppointments(year, month + 1);
-      var daysInMonth = this.state.daysPerMonths[month];
-      var days = [];
+      this.props.handleAppointments(year, month + 1); // let daysInMonth = this.state.daysPerMonths[month]
+      // let days = []
+      // for (let i = 0, j = 1; i < 35; i++) {
+      //   if (i < start) { days.push(daysInMonth - start + i) }
+      //   else {
+      //     j = j % daysInMonth
+      //     if (j === 0) j = daysInMonth;
+      //     days.push(j)
+      //     j++
+      //   }
+      // }
+      // this.setState({days: days})
 
-      for (var i = 0, j = 1; i < 35; i++) {
-        if (i < start) {
-          days.push(daysInMonth - start + i);
-        } else {
-          j = j % daysInMonth;
-          if (j === 0) j = daysInMonth;
-          days.push(j);
-          j++;
-        }
-      }
-
-      this.setState({
-        days: days
-      });
+      this.handleDaysPerMonth(year, month + 1);
     }
   }, {
     key: "handleModal",
@@ -647,6 +679,7 @@ function (_Component) {
       if (!this.props.modal) {
         var day = event.target.dataset.day;
         var modal = document.getElementById("modal".concat(day));
+        console.log(modal);
         modal.style.display = 'flex';
         modal.style.flexDirection = 'column';
         modal.style.justifyContent = 'space-between';
@@ -706,7 +739,7 @@ function (_Component) {
           className: "daysEntry"
         }, _react.default.createElement("li", {
           "data-day": day
-        }, day), _react.default.createElement(_Appointments.default, {
+        }, day[0]), _react.default.createElement(_Appointments.default, {
           day: day
         }), _react.default.createElement(_DayPage.default, {
           day: day
@@ -1375,7 +1408,9 @@ function _default() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.handleDaysPerMonth = exports.handleArrow = void 0;
+exports.getTimeStart = exports.creatingTimeString = exports.creatingTimePart = exports.handleDaysPerMonth = exports.handleArrow = void 0;
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 var handleArrow = function handleArrow(event) {
   if (event.target.className === 'next') {
@@ -1410,27 +1445,89 @@ var handleDaysPerMonth = function handleDaysPerMonth(year, month) {
   year = checkDate.getFullYear();
   month = checkDate.getMonth();
   var start = checkDate.getDay();
-  var daysInMonth = this.state.daysPerMonths[month];
-  if (month === 1 && year % 4 === 0) daysInMonth++;
+  var daysPerMonths = this.state.daysPerMonths.slice(0);
+  var daysInMonth = daysPerMonths[month];
+  var daysInPreMonth = daysPerMonths[month - 1];
+  var preMonth = month + 1;
+  var nextMonth = month + 1;
+  var preYear = year;
+  var nextYear = year;
+  console.log(_typeof(month));
+
+  if (!(preMonth - 1)) {
+    preMonth = 12;
+    preYear = year - 1;
+  } else {
+    preMonth--;
+  }
+
+  if (nextMonth + 1 === 13) {
+    nextMonth = 1;
+    nextYear++;
+  } else {
+    nextMonth++;
+  }
+
+  if (month === 1 && year % 4 === 0) daysInMonth++;else if (month === 2 && year % 4 === 0) daysInPreMonth++;
   var days = [];
 
   for (var i = 0, j = 1; i < 35; i++) {
     if (i < start) {
-      days.push(daysInMonth - start + i);
+      days.push([daysInPreMonth - start + i + 1, preYear, preMonth]);
+    } else if (j <= daysInMonth) {
+      days.push([j, year, month + 1]);
+      j++;
     } else {
-      j = j % daysInMonth;
-      if (j === 0) j = daysInMonth;
-      days.push(j);
+      days.push([j % daysInMonth, nextYear, nextMonth]);
       j++;
     }
   }
 
+  console.log(days);
   this.setState({
     days: days
   });
 };
 
 exports.handleDaysPerMonth = handleDaysPerMonth;
+
+var creatingTimePart = function creatingTimePart(num) {
+  if (num.length !== 2) {
+    num = '0' + num;
+  }
+
+  return num;
+};
+
+exports.creatingTimePart = creatingTimePart;
+
+var creatingTimeString = function creatingTimeString(startH, startM, start, endH, endM, end) {
+  startH = creatingTimePart(startH.value);
+  startM = creatingTimePart(startM.value);
+  endH = creatingTimePart(endH.value);
+  endM = creatingTimePart(endM.value);
+  var timeString = "".concat(startH, ":").concat(startM).concat(start.value, " - ").concat(endH, ":").concat(endM).concat(end.value);
+  return timeString;
+}; //For comparing start Times to sort appointments on same day
+
+
+exports.creatingTimeString = creatingTimeString;
+
+var getTimeStart = function getTimeStart(appointment) {
+  var startTime = appointment.time.slice(0, 8);
+  var changedNumber = '';
+
+  for (var i = 0; i < startTime.length; i++) {
+    if (startTime[i] === ':') {} else {
+      changedNumber += startTime[i];
+    }
+  }
+
+  changedNumber = parseInt(changedNumber) % 1200;
+  return changedNumber;
+};
+
+exports.getTimeStart = getTimeStart;
 
 /***/ }),
 

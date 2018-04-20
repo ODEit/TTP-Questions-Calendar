@@ -40,18 +40,19 @@ class UserHome extends Component {
     this.props.handleAppointments(year, month+1)
     
     
-    let daysInMonth = this.state.daysPerMonths[month]
-    let days = []
-    for (let i = 0, j = 1; i < 35; i++) {
-      if (i < start) { days.push(daysInMonth - start + i) }
-      else {
-        j = j % daysInMonth
-        if (j === 0) j = daysInMonth;
-        days.push(j)
-        j++
-      }
-    }
-    this.setState({days: days})
+    // let daysInMonth = this.state.daysPerMonths[month]
+    // let days = []
+    // for (let i = 0, j = 1; i < 35; i++) {
+    //   if (i < start) { days.push(daysInMonth - start + i) }
+    //   else {
+    //     j = j % daysInMonth
+    //     if (j === 0) j = daysInMonth;
+    //     days.push(j)
+    //     j++
+    //   }
+    // }
+    // this.setState({days: days})
+    this.handleDaysPerMonth(year, month+1)
   }
 
   handleModal(event) {
@@ -59,6 +60,7 @@ class UserHome extends Component {
     if(!this.props.modal){
     const day = event.target.dataset.day
     let modal = document.getElementById(`modal${day}`)
+    console.log(modal)
     modal.style.display = 'flex'
     modal.style.flexDirection = 'column' 
     modal.style.justifyContent = 'space-between'
@@ -113,7 +115,7 @@ class UserHome extends Component {
               data-day={day}
               onClick={this.handleModal}
               className="daysEntry">
-              <li data-day={day} >{day}</li>
+              <li data-day={day} >{day[0]}</li>
               <Appointments day = {day} />
               <DayPage day={day}/>
             </div>)
