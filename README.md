@@ -1,6 +1,4 @@
-#TTP Calendar APP
-
-## What does it do?
+## TTP-Calendar app
 
 This is a calendar app that allows you to post and delete your own appointments/events/notifications anywhere between the year 101 and 257,759. The date object does weird things below the year 101 and 
 after the year 257,759.
