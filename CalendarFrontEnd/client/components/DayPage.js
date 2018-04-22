@@ -10,9 +10,10 @@ const dayPage = (props) => {
 
     function handleClose(event) {
         event.stopPropagation()
+        console.log('hi')
         let modal = document.getElementById(`modal${props.day}`)
         modal.style.display = 'none'
-        props.handleModal()
+        props.changeModal()
         return console.log('done')
     }
 
@@ -23,8 +24,8 @@ const dayPage = (props) => {
                 <span className='modal-date'>{`${props.day[0]}/${props.day[2]}/${props.day[1]}`}</span>
                 <span className='modal-close' onClick={handleClose.bind(this)}>X</span>
             </div>
-            <form className='create-appointment' onSubmit={(event) => props.handleAddAppointment(event, props)}>
-                <div className = 'create-appointment-time'>
+            <form className='create-appointment' onSubmit={(event) => { props.handleAddAppointment(event, props, handleClose); }}>
+                <div className='create-appointment-time'>
                     <div>
                         <span>Start Time: </span>
                         <input name='startHour' type='number' max='12' min='1'></input>
@@ -67,10 +68,10 @@ const mapState = (state) => {
 
 const mapDispatch = (dispatch) => {
     return {
-        handleModal() {
+        changeModal() {
             dispatch(shiftModal())
         },
-        handleAddAppointment(event, props) {
+        handleAddAppointment(event, props, handleClose) {
             event.preventDefault()
             let { description, endHour, endMin, startHour, startMin ,start,end} = event.target
 
@@ -89,8 +90,9 @@ const mapDispatch = (dispatch) => {
                 description: description.value,
                 time: time
             }
+            handleClose(event)
             dispatch(addAppointmentThunk(body))
-             
+            
         }
     }
 }

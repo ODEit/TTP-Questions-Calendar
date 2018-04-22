@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import axios from 'axios';
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import DayPage from './DayPage'
 import Appointments from './Appointments';
@@ -10,7 +9,7 @@ import {handleArrow, handleDaysPerMonth} from '../utility.js'
 /**
  * COMPONENT
  */
-class UserHome extends Component {
+class CalendarPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -39,19 +38,6 @@ class UserHome extends Component {
     this.props.handleYear(year)
     this.props.handleAppointments(year, month+1)
     
-    
-    // let daysInMonth = this.state.daysPerMonths[month]
-    // let days = []
-    // for (let i = 0, j = 1; i < 35; i++) {
-    //   if (i < start) { days.push(daysInMonth - start + i) }
-    //   else {
-    //     j = j % daysInMonth
-    //     if (j === 0) j = daysInMonth;
-    //     days.push(j)
-    //     j++
-    //   }
-    // }
-    // this.setState({days: days})
     this.handleDaysPerMonth(year, month+1)
   }
 
@@ -72,6 +58,9 @@ class UserHome extends Component {
     event.preventDefault();
     let year = event.target.year.value
     let newMonth = event.target.month.value
+    year = parseInt(year)
+    newMonth = parseInt(newMonth)
+    if(!year || !newMonth) return alert('to search by year and month, you must complete the form')
     this.props.handleAppointments(year, newMonth)    
     this.props.handleMonth(newMonth)
     this.props.handleYear(year)
@@ -85,7 +74,9 @@ class UserHome extends Component {
       <div>
         <span>Present Date: {this.props.presentDate}</span>
         <form onSubmit = {this.handleDate}>
-          <span>Year: </span><input type = 'number' min = '1' name = 'year' ></input>
+
+        {/* Year can not go lower than 101 */}
+          <span>Year: </span><input type = 'number' min = '101' name = 'year' ></input>
           <span>Month: </span><input type ='number' min = '1' max = '12' name = 'month' ></input>
           <button type = 'submit'>submit</button>
         </form>
@@ -114,7 +105,7 @@ class UserHome extends Component {
             return (<div key={key}
               data-day={day}
               onClick={this.handleModal}
-              className="daysEntry">
+              className={`daysEntry ${day[3]}`}>
               <li data-day={day} >{day[0]}</li>
               <Appointments day = {day} />
               <DayPage day={day}/>
@@ -135,7 +126,6 @@ class UserHome extends Component {
  */
 const mapState = (state) => {
   return {
-    email: state.user.email,
     month: state.calendar.month,
     year: state.calendar.year,
     presentDate: state.calendar.presentDate,
@@ -162,11 +152,5 @@ const mapDispatch = (dispatch)=>{
     }
   }
 }
-export default connect(mapState, mapDispatch)(UserHome)
+export default connect(mapState, mapDispatch)(CalendarPage)
 
-/**
- * PROP TYPES
- */
-UserHome.propTypes = {
-  email: PropTypes.string
-}

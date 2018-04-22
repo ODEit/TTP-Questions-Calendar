@@ -67,9 +67,9 @@ body {
 }
 /* Weekdays (Mon-Sun) */
 .weekdays {
-    margin: 0;
     padding: 10px 0;
-    background-color:#ddd;
+    border-top: 0.01rem solid black;
+    border-bottom: 0.01rem solid black   
 }
 
 .weekdays li {
@@ -130,13 +130,17 @@ body {
   text-align: left;
   font-size: 1.2rem;
   transition: all .3s ease;
-  border: .05rem solid;
+  /* border: .001rem solid; */
   padding: .25rem;
 }
 
 .days .daysEntry:hover{
   background-color: var(--main-theme);
   color:white
+}
+
+.not-present{
+  background-color: gainsboro
 }
 
 .modal{
@@ -169,13 +173,12 @@ body {
 }
 
 .modal-close{
-  background: rgb(255, 196, 0);
   transition: all .2s ease;
   padding:.3rem;  
 }
 
 .modal-close:hover{
-  color: white;
+  color: red;
 }
 
 .create-appointment{
@@ -210,10 +213,7 @@ body {
 }
 
 .appointment-content{
-  display:flex;
-  flex-direction: column;
-  padding:.5rem;
-  margin: .5rem;
+  margin: .2rem;
 }
 
 .appointment-time{

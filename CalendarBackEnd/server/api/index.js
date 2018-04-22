@@ -1,8 +1,6 @@
 const router = require('express').Router()
 module.exports = router
 
-router.use('/users', require('./users'))
-
 router.use('/appointments', require('./appointments'))
 
 router.use((req, res, next) => {
