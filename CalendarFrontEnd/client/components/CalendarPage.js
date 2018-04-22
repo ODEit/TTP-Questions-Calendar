@@ -25,10 +25,13 @@ class CalendarPage extends Component {
     this.handleDaysPerMonth = handleDaysPerMonth.bind(this)
   }
   componentDidMount() {
+    //making a presendDate object and presentDate string and sending it up to my redux store
     let presentDate = new Date
-    let presentDateString = new Date().toString();
+    let presentDateString = presentDate.toString();
     presentDateString = presentDateString.slice(0, presentDateString.indexOf(':') - 2)
     this.props.handlePresentDate(presentDateString)
+    
+    //making sure my application knows the correct month and year we are on, for getting purposes
     let checkDate = new Date(`${presentDate.getFullYear()}, ${presentDate.getMonth() + 1}, 1`)
     let year = checkDate.getFullYear()
     let month = checkDate.getMonth()
@@ -38,15 +41,15 @@ class CalendarPage extends Component {
     this.props.handleYear(year)
     this.props.handleAppointments(year, month+1)
     
+    //create a day array that holds the correct days for the calendars 5 rows 7 days and setState on it
     this.handleDaysPerMonth(year, month+1)
   }
 
+    //making a popup modal
   handleModal(event) {
-    console.log(this.props.modal)
     if(!this.props.modal){
     const day = event.target.dataset.day
     let modal = document.getElementById(`modal${day}`)
-    console.log(modal)
     modal.style.display = 'flex'
     modal.style.flexDirection = 'column' 
     modal.style.justifyContent = 'space-between'
@@ -54,6 +57,7 @@ class CalendarPage extends Component {
   }
   }
   
+    //also allowing a person to search up a date ahead or behind them and input events.
   handleDate(event){
     event.preventDefault();
     let year = event.target.year.value

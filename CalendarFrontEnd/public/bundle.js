@@ -136,8 +136,8 @@ var Appointments = function Appointments(props) {
   var day = props.day,
       appointments = props.appointments,
       handleDelete = props.handleDelete,
-      modal = props.modal,
-      month = props.month;
+      modal = props.modal; //making sure I'm getting the right appointments for the right days and sorting them according to their start time
+
   appointments = appointments.filter(function (appointment) {
     return day[0] == appointment.day && day[1] == appointment.year && day[2] == appointment.month;
   });
@@ -168,8 +168,7 @@ var Appointments = function Appointments(props) {
 var mapState = function mapState(state) {
   return {
     appointments: state.calendar.appointments,
-    modal: state.calendar.modal,
-    month: state.calendar.month
+    modal: state.calendar.modal
   };
 };
 
@@ -265,34 +264,36 @@ function (_Component) {
   _createClass(CalendarPage, [{
     key: "componentDidMount",
     value: function componentDidMount() {
+      //making a presendDate object and presentDate string and sending it up to my redux store
       var presentDate = new Date();
-      var presentDateString = new Date().toString();
+      var presentDateString = presentDate.toString();
       presentDateString = presentDateString.slice(0, presentDateString.indexOf(':') - 2);
-      this.props.handlePresentDate(presentDateString);
+      this.props.handlePresentDate(presentDateString); //making sure my application knows the correct month and year we are on, for getting purposes
+
       var checkDate = new Date("".concat(presentDate.getFullYear(), ", ").concat(presentDate.getMonth() + 1, ", 1"));
       var year = checkDate.getFullYear();
       var month = checkDate.getMonth();
       var start = checkDate.getDay();
       this.props.handleMonth(month + 1);
       this.props.handleYear(year);
-      this.props.handleAppointments(year, month + 1);
+      this.props.handleAppointments(year, month + 1); //create a day array that holds the correct days for the calendars 5 rows 7 days and setState on it
+
       this.handleDaysPerMonth(year, month + 1);
-    }
+    } //making a popup modal
+
   }, {
     key: "handleModal",
     value: function handleModal(event) {
-      console.log(this.props.modal);
-
       if (!this.props.modal) {
         var day = event.target.dataset.day;
         var modal = document.getElementById("modal".concat(day));
-        console.log(modal);
         modal.style.display = 'flex';
         modal.style.flexDirection = 'column';
         modal.style.justifyContent = 'space-between';
         this.props.handleModal();
       }
-    }
+    } //also allowing a person to search up a date ahead or behind them and input events.
+
   }, {
     key: "handleDate",
     value: function handleDate(event) {
@@ -432,6 +433,7 @@ var _this = void 0;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//my day page is my modal
 var dayPage = function dayPage(props) {
   function handleClose(event) {
     event.stopPropagation();
@@ -525,7 +527,8 @@ var mapDispatch = function mapDispatch(dispatch) {
           startHour = _event$target.startHour,
           startMin = _event$target.startMin,
           start = _event$target.start,
-          end = _event$target.end;
+          end = _event$target.end; //making sure everything is put in correctly before they submit their appointment
+
       if (!endMin.value || !endHour.value || !startHour.value || !startMin.value || !start.value || !end.value) return alert('Time not fully filled out');
 
       if (start.value === 'PM' && end.value === 'AM') {
@@ -545,7 +548,8 @@ var mapDispatch = function mapDispatch(dispatch) {
         month: props.day[2],
         day: props.day[0],
         description: description.value,
-        time: time
+        time: time //closing the modal
+
       };
       handleClose(event);
       dispatch((0, _store.addAppointmentThunk)(body));
@@ -1065,6 +1069,8 @@ exports.getTimeStart = exports.creatingTimeString = exports.creatingTimePart = e
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+// Utility page made to not clutter other pages
+//used to handle switching between months using the arrows
 var handleArrow = function handleArrow(event) {
   console.log(_typeof(this.props.year), _typeof(this.props.month));
 
@@ -1092,7 +1098,8 @@ var handleArrow = function handleArrow(event) {
       this.props.handleMonth(this.props.month - 1);
     }
   }
-};
+}; //used to create the next calendar month's array for display
+
 
 exports.handleArrow = handleArrow;
 
@@ -1156,7 +1163,8 @@ var creatingTimePart = function creatingTimePart(num) {
   }
 
   return num;
-};
+}; //creates the time string for each appointment
+
 
 exports.creatingTimePart = creatingTimePart;
 

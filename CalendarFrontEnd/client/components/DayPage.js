@@ -6,6 +6,8 @@ import Appointments from './Appointments'
 import { shiftModal, addAppointmentThunk, getAppointmentsThunk } from '../store'
 import { creatingTimeString } from '../utility'
 
+//my day page is my modal
+
 const dayPage = (props) => {
 
     function handleClose(event) {
@@ -75,6 +77,7 @@ const mapDispatch = (dispatch) => {
             event.preventDefault()
             let { description, endHour, endMin, startHour, startMin ,start,end} = event.target
 
+            //making sure everything is put in correctly before they submit their appointment
             if (!endMin.value || !endHour.value || !startHour.value || !startMin.value || !start.value || !end.value) return alert('Time not fully filled out')
             if (start.value === 'PM' && end.value === 'AM') { return alert('start and end time are impossible') }
             else if (start.value === end.value) {
@@ -90,7 +93,10 @@ const mapDispatch = (dispatch) => {
                 description: description.value,
                 time: time
             }
+
+            //closing the modal
             handleClose(event)
+
             dispatch(addAppointmentThunk(body))
             
         }

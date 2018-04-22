@@ -1,3 +1,7 @@
+// Utility page made to not clutter other pages
+
+
+//used to handle switching between months using the arrows
 export const handleArrow = function (event) {
   console.log(typeof this.props.year, typeof this.props.month)
   if (event.target.className === 'next') {
@@ -29,6 +33,7 @@ export const handleArrow = function (event) {
   }
 }
 
+//used to create the next calendar month's array for display
 export const handleDaysPerMonth = function (year, month) {
   let checkDate = new Date(`${year}, ${month}, 1`)
   console.log(month)
@@ -82,6 +87,7 @@ export const creatingTimePart = function (num) {
   return num
 }
 
+//creates the time string for each appointment
 export const creatingTimeString = function (startH, startM, start, endH, endM, end) {
   startH = creatingTimePart(startH.value)
   startM = creatingTimePart(startM.value)

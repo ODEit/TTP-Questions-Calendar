@@ -6,7 +6,9 @@ import { removeAppointmentThunk } from '../store'
 import { getTimeStart } from '../utility'
 
 const Appointments = (props) => {
-    let { day, appointments, handleDelete, modal, month } = props
+    let { day, appointments, handleDelete, modal } = props
+
+    //making sure I'm getting the right appointments for the right days and sorting them according to their start time
     appointments = appointments.filter(appointment => day[0] == appointment.day && day[1] == appointment.year && day[2] == appointment.month )
     appointments = appointments.sort((a, b) => getTimeStart(a) - getTimeStart(b))
     return (
@@ -30,7 +32,6 @@ const mapState = (state) => {
     return {
         appointments: state.calendar.appointments,
         modal: state.calendar.modal,
-        month: state.calendar.month
     }
 }
 const mapDispatch = (dispatch) => {
