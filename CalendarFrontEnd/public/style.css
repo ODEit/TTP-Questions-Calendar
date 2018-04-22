@@ -5,7 +5,9 @@
 }
 
 ul {list-style-type: none;}
-body {font-family: Verdana, sans-serif;}
+body {
+  font-family: Verdana, sans-serif;
+  }
 
 
 /* Month header */
@@ -42,30 +44,32 @@ body {font-family: Verdana, sans-serif;}
 
 /* Previous button inside month header */
 .month .prev {
-    padding-top: 10px;
+    font-size: 2.2rem;
+    align-self: center;
     transition: all .5s ease;
 }
 
 .month .prev:hover{
-  font-size: 2.5em;
+  font-size: 3.2rem;
   color: black;
 }
 
 /* Next button */
 .month .next {
-    padding-top: 10px;
-    transition: all .5s ease;    
+  font-size: 2.2rem;  
+  align-self: center;
+  transition: all .5s ease;    
 }
 
 .month .next:hover{
-  font-size: 2.5em;
+  font-size: 3.2rem;
   color: black;
 }
 /* Weekdays (Mon-Sun) */
 .weekdays {
-    margin: 0;
     padding: 10px 0;
-    background-color:#ddd;
+    border-top: 0.01rem solid black;
+    border-bottom: 0.01rem solid black   
 }
 
 .weekdays li {
@@ -78,11 +82,20 @@ body {font-family: Verdana, sans-serif;}
 /* My styles*/
 
 .headerFlex{
-  display: flex;
+  display:flex;
   justify-content: space-between;
-  text-decoration: none;
   color: lightblue;
-  font-size: 1.5rem;
+  font-size: 2rem;
+  padding:1rem;
+}
+
+.headerFlex img{
+  width:auto;
+  height:2rem;
+}
+
+.headerFlex h1{
+  margin:0;
 }
 
 .headerRight{
@@ -106,16 +119,115 @@ body {font-family: Verdana, sans-serif;}
 .days{
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(5, 5rem)
+  grid-template-rows: repeat(5, 5rem);
+  padding-left:0;
+  background-color: white
 }
 
-.days li{
+.days .daysEntry{
+  position: relative;
+  overflow-y: scroll;
   text-align: left;
   font-size: 1.2rem;
-  transition: all .3s ease
+  transition: all .3s ease;
+  /* border: .001rem solid; */
+  padding: .25rem;
 }
 
-.days li:hover{
+.days .daysEntry:hover{
   background-color: var(--main-theme);
   color:white
+}
+
+.not-present{
+  background-color: gainsboro
+}
+
+.modal{
+  display: none;
+  color:cornflowerblue;
+  display: none;
+  position: fixed; /* Stay in place */
+  z-index: 1;
+  left: 25vw;
+  top: 25vh;
+  width: 50vw; /* Full width */
+  height: 20rem; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color:white;
+  opacity: 1;
+  border: .1rem solid black;
+}
+
+
+
+.modal-header {
+  display: flex;
+  margin: .5rem;
+  justify-content: space-between;
+  padding: .3rem;
+}
+
+.modal-date{
+  padding:.3rem;
+}
+
+.modal-close{
+  transition: all .2s ease;
+  padding:.3rem;  
+}
+
+.modal-close:hover{
+  color: red;
+}
+
+.create-appointment{
+  background-color:blanchedalmond;
+  color:black;
+  margin:.5rem;
+  padding:.3rem;
+}
+
+.create-appointment-time{
+  display: flex;
+  justify-content: space-around;
+  margin-top: .3rem;
+}
+
+.create-appointment-time input{
+  height: 1.25rem;
+  margin: .3rem;
+  font-size: 1rem;
+}
+
+.create-appointment-description{
+  width:95%;
+  height: 2rem;
+}
+
+.appointment {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: cornflowerblue;
+}
+
+.appointment-content{
+  margin: .2rem;
+}
+
+.appointment-time{
+  font-size: .7rem;
+  color: rgb(105, 104, 104)
+}
+
+.appointment-description {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color:cornflowerblue
+}
+
+.appointment-description button {
+  
 }

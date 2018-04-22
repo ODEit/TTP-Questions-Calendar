@@ -103,10 +103,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ "./CalendarFrontEnd/client/components/auth-form.js":
-/*!*********************************************************!*\
-  !*** ./CalendarFrontEnd/client/components/auth-form.js ***!
-  \*********************************************************/
+/***/ "./CalendarFrontEnd/client/components/Appointments.js":
+/*!************************************************************!*\
+  !*** ./CalendarFrontEnd/client/components/Appointments.js ***!
+  \************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -116,96 +116,446 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Signup = exports.Login = void 0;
+exports.default = void 0;
 
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
 
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
-var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js"));
-
 var _store = __webpack_require__(/*! ../store */ "./CalendarFrontEnd/client/store/index.js");
+
+var _utility = __webpack_require__(/*! ../utility */ "./CalendarFrontEnd/client/utility.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * COMPONENT
- */
-var AuthForm = function AuthForm(props) {
-  var name = props.name,
-      displayName = props.displayName,
-      handleSubmit = props.handleSubmit,
-      error = props.error;
-  return _react.default.createElement("div", null, _react.default.createElement("form", {
-    onSubmit: handleSubmit,
-    name: name
-  }, _react.default.createElement("div", null, _react.default.createElement("label", {
-    htmlFor: "email"
-  }, _react.default.createElement("small", null, "Email")), _react.default.createElement("input", {
-    name: "email",
-    type: "text"
-  })), _react.default.createElement("div", null, _react.default.createElement("label", {
-    htmlFor: "password"
-  }, _react.default.createElement("small", null, "Password")), _react.default.createElement("input", {
-    name: "password",
-    type: "password"
-  })), _react.default.createElement("div", null, _react.default.createElement("button", {
-    type: "submit"
-  }, displayName)), error && error.response && _react.default.createElement("div", null, " ", error.response.data, " ")), _react.default.createElement("a", {
-    href: "/auth/google"
-  }, displayName, " with Google"));
-};
-/**
- * CONTAINER
- *   Note that we have two different sets of 'mapStateToProps' functions -
- *   one for Login, and one for Signup. However, they share the same 'mapDispatchToProps'
- *   function, and share the same Component. This is a good example of how we
- *   can stay DRY with interfaces that are very similar to each other!
- */
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-
-var mapLogin = function mapLogin(state) {
-  return {
-    name: 'login',
-    displayName: 'Login',
-    error: state.user.error
-  };
+var Appointments = function Appointments(props) {
+  var day = props.day,
+      appointments = props.appointments,
+      handleDelete = props.handleDelete,
+      modal = props.modal,
+      month = props.month;
+  appointments = appointments.filter(function (appointment) {
+    return day[0] == appointment.day && day[1] == appointment.year && day[2] == appointment.month;
+  });
+  appointments = appointments.sort(function (a, b) {
+    return (0, _utility.getTimeStart)(a) - (0, _utility.getTimeStart)(b);
+  });
+  return _react.default.createElement("div", {
+    className: "appointment"
+  }, appointments.length ? appointments.map(function (appointment, key) {
+    return _react.default.createElement("div", {
+      className: "appointment-content",
+      key: key
+    }, _react.default.createElement("span", {
+      className: "appointment-time",
+      "data-day": day
+    }, appointment.time), _react.default.createElement("div", {
+      className: "appointment-description",
+      "data-day": day
+    }, appointment.description, props.from && _react.default.createElement("button", {
+      type: "delete",
+      onClick: function onClick() {
+        return handleDelete(appointment.id);
+      }
+    }, "x")));
+  }) : null);
 };
 
-var mapSignup = function mapSignup(state) {
+var mapState = function mapState(state) {
   return {
-    name: 'signup',
-    displayName: 'Sign Up',
-    error: state.user.error
+    appointments: state.calendar.appointments,
+    modal: state.calendar.modal,
+    month: state.calendar.month
   };
 };
 
 var mapDispatch = function mapDispatch(dispatch) {
   return {
-    handleSubmit: function handleSubmit(evt) {
-      evt.preventDefault();
-      var formName = evt.target.name;
-      var email = evt.target.email.value;
-      var password = evt.target.password.value;
-      dispatch((0, _store.auth)(email, password, formName));
+    handleDelete: function handleDelete(id) {
+      dispatch((0, _store.removeAppointmentThunk)(id));
     }
   };
 };
 
-var Login = (0, _reactRedux.connect)(mapLogin, mapDispatch)(AuthForm);
-exports.Login = Login;
-var Signup = (0, _reactRedux.connect)(mapSignup, mapDispatch)(AuthForm);
+var _default = (0, _reactRedux.connect)(mapState, mapDispatch)(Appointments);
+
+exports.default = _default;
+
+/***/ }),
+
+/***/ "./CalendarFrontEnd/client/components/CalendarPage.js":
+/*!************************************************************!*\
+  !*** ./CalendarFrontEnd/client/components/CalendarPage.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _DayPage = _interopRequireDefault(__webpack_require__(/*! ./DayPage */ "./CalendarFrontEnd/client/components/DayPage.js"));
+
+var _Appointments = _interopRequireDefault(__webpack_require__(/*! ./Appointments */ "./CalendarFrontEnd/client/components/Appointments.js"));
+
+var _store = __webpack_require__(/*! ../store */ "./CalendarFrontEnd/client/store/index.js");
+
+var _utility = __webpack_require__(/*! ../utility.js */ "./CalendarFrontEnd/client/utility.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 /**
- * PROP TYPES
+ * COMPONENT
+ */
+var CalendarPage =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(CalendarPage, _Component);
+
+  function CalendarPage(props) {
+    var _this;
+
+    _classCallCheck(this, CalendarPage);
+
+    _this = _possibleConstructorReturn(this, (CalendarPage.__proto__ || Object.getPrototypeOf(CalendarPage)).call(this, props));
+    _this.state = {
+      checkDate: '',
+      start: '',
+      days: [],
+      daysPerMonths: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    };
+    _this.handleModal = _this.handleModal.bind(_assertThisInitialized(_this));
+    _this.handleDate = _this.handleDate.bind(_assertThisInitialized(_this));
+    _this.handleArrow = _utility.handleArrow.bind(_assertThisInitialized(_this));
+    _this.handleDaysPerMonth = _utility.handleDaysPerMonth.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(CalendarPage, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var presentDate = new Date();
+      var presentDateString = new Date().toString();
+      presentDateString = presentDateString.slice(0, presentDateString.indexOf(':') - 2);
+      this.props.handlePresentDate(presentDateString);
+      var checkDate = new Date("".concat(presentDate.getFullYear(), ", ").concat(presentDate.getMonth() + 1, ", 1"));
+      var year = checkDate.getFullYear();
+      var month = checkDate.getMonth();
+      var start = checkDate.getDay();
+      this.props.handleMonth(month + 1);
+      this.props.handleYear(year);
+      this.props.handleAppointments(year, month + 1);
+      this.handleDaysPerMonth(year, month + 1);
+    }
+  }, {
+    key: "handleModal",
+    value: function handleModal(event) {
+      console.log(this.props.modal);
+
+      if (!this.props.modal) {
+        var day = event.target.dataset.day;
+        var modal = document.getElementById("modal".concat(day));
+        console.log(modal);
+        modal.style.display = 'flex';
+        modal.style.flexDirection = 'column';
+        modal.style.justifyContent = 'space-between';
+        this.props.handleModal();
+      }
+    }
+  }, {
+    key: "handleDate",
+    value: function handleDate(event) {
+      event.preventDefault();
+      var year = event.target.year.value;
+      var newMonth = event.target.month.value;
+      year = parseInt(year);
+      newMonth = parseInt(newMonth);
+      if (!year || !newMonth) return alert('to search by year and month, you must complete the form');
+      this.props.handleAppointments(year, newMonth);
+      this.props.handleMonth(newMonth);
+      this.props.handleYear(year);
+      this.handleDaysPerMonth(year, newMonth);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      return _react.default.createElement("div", null, _react.default.createElement("span", null, "Present Date: ", this.props.presentDate), _react.default.createElement("form", {
+        onSubmit: this.handleDate
+      }, _react.default.createElement("span", null, "Year: "), _react.default.createElement("input", {
+        type: "number",
+        min: "101",
+        name: "year"
+      }), _react.default.createElement("span", null, "Month: "), _react.default.createElement("input", {
+        type: "number",
+        min: "1",
+        max: "12",
+        name: "month"
+      }), _react.default.createElement("button", {
+        type: "submit"
+      }, "submit")), _react.default.createElement("div", {
+        className: "month"
+      }, _react.default.createElement("ul", {
+        className: "monthContent"
+      }, _react.default.createElement("li", {
+        className: "prev",
+        onClick: this.handleArrow
+      }, "\u276E"), _react.default.createElement("h1", {
+        className: "calendarHead"
+      }, "".concat(this.state.months[this.props.month - 1], " ").concat(this.props.year)), _react.default.createElement("li", {
+        className: "next",
+        onClick: this.handleArrow
+      }, "\u276F"))), _react.default.createElement("ul", {
+        className: "weekdays"
+      }, _react.default.createElement("li", null, "Su"), _react.default.createElement("li", null, "Mo"), _react.default.createElement("li", null, "Tu"), _react.default.createElement("li", null, "We"), _react.default.createElement("li", null, "Th"), _react.default.createElement("li", null, "Fr"), _react.default.createElement("li", null, "Sa")), _react.default.createElement("ul", {
+        className: "days"
+      }, this.state.days.length === 35 && this.state.days.map(function (day, key) {
+        return _react.default.createElement("div", {
+          key: key,
+          "data-day": day,
+          onClick: _this2.handleModal,
+          className: "daysEntry ".concat(day[3])
+        }, _react.default.createElement("li", {
+          "data-day": day
+        }, day[0]), _react.default.createElement(_Appointments.default, {
+          day: day
+        }), _react.default.createElement(_DayPage.default, {
+          day: day
+        }));
+      })));
+    }
+  }]);
+
+  return CalendarPage;
+}(_react.Component);
+/**
+ * CONTAINER
  */
 
-exports.Signup = Signup;
-AuthForm.propTypes = {
-  name: _propTypes.default.string.isRequired,
-  displayName: _propTypes.default.string.isRequired,
-  handleSubmit: _propTypes.default.func.isRequired,
-  error: _propTypes.default.object
+
+var mapState = function mapState(state) {
+  return {
+    month: state.calendar.month,
+    year: state.calendar.year,
+    presentDate: state.calendar.presentDate,
+    modal: state.calendar.modal,
+    appointments: state.calendar.appointments
+  };
 };
+
+var mapDispatch = function mapDispatch(dispatch) {
+  return {
+    handleMonth: function handleMonth(month) {
+      dispatch((0, _store.getMonth)(month));
+    },
+    handleYear: function handleYear(year) {
+      dispatch((0, _store.getYear)(year));
+    },
+    handlePresentDate: function handlePresentDate(presentDate) {
+      dispatch((0, _store.getPresentDate)(presentDate));
+    },
+    handleModal: function handleModal() {
+      dispatch((0, _store.shiftModal)());
+    },
+    handleAppointments: function handleAppointments(year, month) {
+      dispatch((0, _store.getAppointmentsThunk)(year, month));
+    }
+  };
+};
+
+var _default = (0, _reactRedux.connect)(mapState, mapDispatch)(CalendarPage);
+
+exports.default = _default;
+
+/***/ }),
+
+/***/ "./CalendarFrontEnd/client/components/DayPage.js":
+/*!*******************************************************!*\
+  !*** ./CalendarFrontEnd/client/components/DayPage.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _Appointments = _interopRequireDefault(__webpack_require__(/*! ./Appointments */ "./CalendarFrontEnd/client/components/Appointments.js"));
+
+var _store = __webpack_require__(/*! ../store */ "./CalendarFrontEnd/client/store/index.js");
+
+var _utility = __webpack_require__(/*! ../utility */ "./CalendarFrontEnd/client/utility.js");
+
+var _this = void 0;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var dayPage = function dayPage(props) {
+  function handleClose(event) {
+    event.stopPropagation();
+    console.log('hi');
+    var modal = document.getElementById("modal".concat(props.day));
+    modal.style.display = 'none';
+    props.changeModal();
+    return console.log('done');
+  }
+
+  return _react.default.createElement("div", {
+    className: "modal",
+    id: "modal".concat(props.day)
+  }, _react.default.createElement("div", {
+    className: "modal-header"
+  }, _react.default.createElement("span", {
+    className: "modal-date"
+  }, "".concat(props.day[0], "/").concat(props.day[2], "/").concat(props.day[1])), _react.default.createElement("span", {
+    className: "modal-close",
+    onClick: handleClose.bind(_this)
+  }, "X")), _react.default.createElement("form", {
+    className: "create-appointment",
+    onSubmit: function onSubmit(event) {
+      props.handleAddAppointment(event, props, handleClose);
+    }
+  }, _react.default.createElement("div", {
+    className: "create-appointment-time"
+  }, _react.default.createElement("div", null, _react.default.createElement("span", null, "Start Time: "), _react.default.createElement("input", {
+    name: "startHour",
+    type: "number",
+    max: "12",
+    min: "1"
+  }), _react.default.createElement("span", null, ":"), _react.default.createElement("input", {
+    name: "startMin",
+    type: "number",
+    max: "60",
+    min: "0"
+  }), _react.default.createElement("select", {
+    name: "start"
+  }, _react.default.createElement("option", {
+    value: "AM"
+  }, "AM"), _react.default.createElement("option", {
+    value: "PM"
+  }, "PM"))), _react.default.createElement("div", null, _react.default.createElement("span", null, "End Time: "), _react.default.createElement("input", {
+    name: "endHour",
+    type: "number",
+    max: "12",
+    min: "1"
+  }), _react.default.createElement("span", null, ":"), _react.default.createElement("input", {
+    name: "endMin",
+    type: "number",
+    max: "60",
+    min: "0"
+  }), _react.default.createElement("select", {
+    name: "end"
+  }, _react.default.createElement("option", {
+    value: "AM"
+  }, "AM"), _react.default.createElement("option", {
+    value: "PM"
+  }, "PM")))), _react.default.createElement("span", null, "Description "), _react.default.createElement("textarea", {
+    name: "description",
+    className: "create-appointment-description"
+  }), _react.default.createElement("button", {
+    type: "submit"
+  }, "submit")), _react.default.createElement(_Appointments.default, {
+    day: props.day,
+    from: true
+  }));
+};
+
+var mapState = function mapState(state) {
+  return {
+    modal: state.calendar.modal,
+    year: state.calendar.year,
+    month: state.calendar.month,
+    appointments: state.calendar.appointments
+  };
+};
+
+var mapDispatch = function mapDispatch(dispatch) {
+  return {
+    changeModal: function changeModal() {
+      dispatch((0, _store.shiftModal)());
+    },
+    handleAddAppointment: function handleAddAppointment(event, props, handleClose) {
+      event.preventDefault();
+      var _event$target = event.target,
+          description = _event$target.description,
+          endHour = _event$target.endHour,
+          endMin = _event$target.endMin,
+          startHour = _event$target.startHour,
+          startMin = _event$target.startMin,
+          start = _event$target.start,
+          end = _event$target.end;
+      if (!endMin.value || !endHour.value || !startHour.value || !startMin.value || !start.value || !end.value) return alert('Time not fully filled out');
+
+      if (start.value === 'PM' && end.value === 'AM') {
+        return alert('start and end time are impossible');
+      } else if (start.value === end.value) {
+        if (parseInt(startHour.value) % 12 > parseInt(endHour.value) % 12) {
+          return alert('start and end time are impossible');
+        } else if (parseInt(startHour.value) === parseInt(endHour.value) && parseInt(startMin.value) > parseInt(endMin.value)) {
+          return alert('start and end time are impossible');
+        }
+      }
+
+      var time = (0, _utility.creatingTimeString)(startHour, startMin, start, endHour, endMin, end);
+      console.log(time, ' , ', time.length, time.slice(0, 8));
+      var body = {
+        year: props.day[1],
+        month: props.day[2],
+        day: props.day[0],
+        description: description.value,
+        time: time
+      };
+      handleClose(event);
+      dispatch((0, _store.addAppointmentThunk)(body));
+    }
+  };
+};
+
+var _default = (0, _reactRedux.connect)(mapState, mapDispatch)(dayPage);
+
+exports.default = _default;
 
 /***/ }),
 
@@ -228,30 +578,16 @@ Object.defineProperty(exports, "Navbar", {
     return _navbar.default;
   }
 });
-Object.defineProperty(exports, "UserHome", {
+Object.defineProperty(exports, "CalendarPage", {
   enumerable: true,
   get: function get() {
-    return _userHome.default;
-  }
-});
-Object.defineProperty(exports, "Login", {
-  enumerable: true,
-  get: function get() {
-    return _authForm.Login;
-  }
-});
-Object.defineProperty(exports, "Signup", {
-  enumerable: true,
-  get: function get() {
-    return _authForm.Signup;
+    return _CalendarPage.default;
   }
 });
 
 var _navbar = _interopRequireDefault(__webpack_require__(/*! ./navbar */ "./CalendarFrontEnd/client/components/navbar.js"));
 
-var _userHome = _interopRequireDefault(__webpack_require__(/*! ./user-home */ "./CalendarFrontEnd/client/components/user-home.js"));
-
-var _authForm = __webpack_require__(/*! ./auth-form */ "./CalendarFrontEnd/client/components/auth-form.js");
+var _CalendarPage = _interopRequireDefault(__webpack_require__(/*! ./CalendarPage */ "./CalendarFrontEnd/client/components/CalendarPage.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -274,13 +610,7 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 
-var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js"));
-
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-
-var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
-
-var _store = __webpack_require__(/*! ../store */ "./CalendarFrontEnd/client/store/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -289,121 +619,13 @@ var Navbar = function Navbar(_ref) {
       isLoggedIn = _ref.isLoggedIn;
   return _react.default.createElement("div", null, _react.default.createElement("div", {
     className: "headerFlex"
-  }, _react.default.createElement("h1", null, "Calendar"), _react.default.createElement("nav", {
-    className: "headerRight"
-  }, isLoggedIn ? _react.default.createElement("div", null, _react.default.createElement(_reactRouterDom.Link, {
-    to: "/home"
-  }, "Home"), _react.default.createElement("a", {
-    href: "#",
-    onClick: handleClick
-  }, "Logout")) : _react.default.createElement("div", null, _react.default.createElement(_reactRouterDom.Link, {
-    to: "/login"
-  }, "Login"), _react.default.createElement(_reactRouterDom.Link, {
-    to: "/signup"
-  }, "Sign Up")))), _react.default.createElement("hr", null));
-};
-/**
- * CONTAINER
- */
-
-
-var mapState = function mapState(state) {
-  return {
-    isLoggedIn: !!state.user.id
-  };
+  }, _react.default.createElement("h1", null, "Calendar"), _react.default.createElement("img", {
+    src: "/trees-svg.png"
+  })), _react.default.createElement("hr", null));
 };
 
-var mapDispatch = function mapDispatch(dispatch) {
-  return {
-    handleClick: function handleClick() {
-      dispatch((0, _store.logout)());
-    }
-  };
-};
-
-var _default = (0, _reactRedux.connect)(mapState, mapDispatch)(Navbar);
-/**
- * PROP TYPES
- */
-
-
+var _default = Navbar;
 exports.default = _default;
-Navbar.propTypes = {
-  handleClick: _propTypes.default.func.isRequired,
-  isLoggedIn: _propTypes.default.bool.isRequired
-};
-
-/***/ }),
-
-/***/ "./CalendarFrontEnd/client/components/user-home.js":
-/*!*********************************************************!*\
-  !*** ./CalendarFrontEnd/client/components/user-home.js ***!
-  \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = exports.UserHome = void 0;
-
-var _react = _interopRequireDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
-
-var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js"));
-
-var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * COMPONENT
- */
-var UserHome = function UserHome(props) {
-  var email = props.email;
-  return _react.default.createElement("div", null, _react.default.createElement("h3", null, "Welcome, ", email), _react.default.createElement("div", {
-    className: "month"
-  }, _react.default.createElement("ul", {
-    className: "monthContent"
-  }, _react.default.createElement("li", {
-    className: "prev"
-  }, "\u276E"), _react.default.createElement("h1", {
-    className: "calendarHead"
-  }, "August 2017"), _react.default.createElement("li", {
-    className: "next"
-  }, "\u276F"))), _react.default.createElement("ul", {
-    className: "weekdays"
-  }, _react.default.createElement("li", null, "Mo"), _react.default.createElement("li", null, "Tu"), _react.default.createElement("li", null, "We"), _react.default.createElement("li", null, "Th"), _react.default.createElement("li", null, "Fr"), _react.default.createElement("li", null, "Sa"), _react.default.createElement("li", null, "Su")), _react.default.createElement("ul", {
-    className: "days"
-  }, _react.default.createElement("li", null, "1"), _react.default.createElement("li", null, "2"), _react.default.createElement("li", null, "3"), _react.default.createElement("li", null, "4"), _react.default.createElement("li", null, "5"), _react.default.createElement("li", null, "6"), _react.default.createElement("li", null, "7"), _react.default.createElement("li", null, "8"), _react.default.createElement("li", null, "9"), _react.default.createElement("li", null, _react.default.createElement("span", {
-    className: "active"
-  }, "10")), _react.default.createElement("li", null, "11"), _react.default.createElement("li", null, "12"), _react.default.createElement("li", null, "13"), _react.default.createElement("li", null, "14"), _react.default.createElement("li", null, "15"), _react.default.createElement("li", null, "16"), _react.default.createElement("li", null, "17"), _react.default.createElement("li", null, "18"), _react.default.createElement("li", null, "19"), _react.default.createElement("li", null, "20"), _react.default.createElement("li", null, "21"), _react.default.createElement("li", null, "22"), _react.default.createElement("li", null, "23"), _react.default.createElement("li", null, "24"), _react.default.createElement("li", null, "25"), _react.default.createElement("li", null, "26"), _react.default.createElement("li", null, "27"), _react.default.createElement("li", null, "28"), _react.default.createElement("li", null, "29"), _react.default.createElement("li", null, "30"), _react.default.createElement("li", null, "31")));
-};
-/**
- * CONTAINER
- */
-
-
-exports.UserHome = UserHome;
-
-var mapState = function mapState(state) {
-  return {
-    email: state.user.email
-  };
-};
-
-var _default = (0, _reactRedux.connect)(mapState)(UserHome);
-/**
- * PROP TYPES
- */
-
-
-exports.default = _default;
-UserHome.propTypes = {
-  email: _propTypes.default.string
-};
 
 /***/ }),
 
@@ -492,13 +714,7 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
 
-var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js"));
-
 var _components = __webpack_require__(/*! ./components */ "./CalendarFrontEnd/client/components/index.js");
-
-var _store = __webpack_require__(/*! ./store */ "./CalendarFrontEnd/client/store/index.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
@@ -531,65 +747,22 @@ function (_Component) {
   }
 
   _createClass(Routes, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.props.loadInitialData();
-    }
-  }, {
     key: "render",
     value: function render() {
-      var isLoggedIn = this.props.isLoggedIn;
       return _react.default.createElement(_reactRouterDom.Switch, null, _react.default.createElement(_reactRouterDom.Route, {
-        path: "/login",
-        component: _components.Login
-      }), _react.default.createElement(_reactRouterDom.Route, {
-        path: "/signup",
-        component: _components.Signup
-      }), isLoggedIn && _react.default.createElement(_reactRouterDom.Switch, null, _react.default.createElement(_reactRouterDom.Route, {
-        path: "/home",
-        component: _components.UserHome
-      })), _react.default.createElement(_reactRouterDom.Route, {
-        component: _components.Login
+        component: _components.CalendarPage
       }));
     }
   }]);
 
   return Routes;
-}(_react.Component);
-/**
- * CONTAINER
- */
-
-
-var mapState = function mapState(state) {
-  return {
-    // Being 'logged in' for our purposes will be defined has having a state.user that has a truthy id.
-    // Otherwise, state.user will be an empty object, and state.user.id will be falsey
-    isLoggedIn: !!state.user.id
-  };
-};
-
-var mapDispatch = function mapDispatch(dispatch) {
-  return {
-    loadInitialData: function loadInitialData() {
-      dispatch((0, _store.me)());
-    }
-  };
-}; // The `withRouter` wrapper makes sure that updates are not blocked
+}(_react.Component); // The `withRouter` wrapper makes sure that updates are not blocked
 // when the url changes
 
 
-var _default = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(mapState, mapDispatch)(Routes));
-/**
- * PROP TYPES
- */
-
+var _default = (0, _reactRouterDom.withRouter)(Routes);
 
 exports.default = _default;
-Routes.propTypes = {
-  loadInitialData: _propTypes.default.func.isRequired,
-  isLoggedIn: _propTypes.default.bool.isRequired
-};
 
 /***/ }),
 
@@ -621,6 +794,209 @@ exports.default = _default;
 
 /***/ }),
 
+/***/ "./CalendarFrontEnd/client/store/calendar.js":
+/*!***************************************************!*\
+  !*** ./CalendarFrontEnd/client/store/calendar.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = _default;
+exports.removeAppointmentThunk = exports.addAppointmentThunk = exports.getAppointmentsThunk = exports.removeAppointment = exports.addAppointments = exports.getAppointments = exports.shiftModal = exports.getYear = exports.getMonth = exports.getPresentDate = void 0;
+
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+* ACTION TYPES
+*/
+var GET_PRESENT_DATE = 'GET_PRESENT_DATE';
+var GET_MONTH = 'GET_MONTH';
+var GET_YEAR = 'GET_YEAR';
+var GET_APPOINTMENTS = 'GET_APPOINTMENTS';
+var ADD_APPOINTMENTS = 'ADD_APPOINTMENTS';
+var SHIFT_MODAL = 'SHIFT_MODAL';
+var REMOVE_APPOINTMENT = 'REMOVE_APPOINTMENT';
+/**
+* INITIAL STATE
+*/
+
+var calendar = {
+  presentDate: '',
+  year: '',
+  month: '',
+  modal: false,
+  appointments: []
+  /**
+  * ACTION CREATORS
+  */
+
+};
+
+var getPresentDate = function getPresentDate(presentDate) {
+  return {
+    type: GET_PRESENT_DATE,
+    presentDate: presentDate
+  };
+};
+
+exports.getPresentDate = getPresentDate;
+
+var getMonth = function getMonth(month) {
+  return {
+    type: GET_MONTH,
+    month: month
+  };
+};
+
+exports.getMonth = getMonth;
+
+var getYear = function getYear(year) {
+  return {
+    type: GET_YEAR,
+    year: year
+  };
+};
+
+exports.getYear = getYear;
+
+var shiftModal = function shiftModal() {
+  return {
+    type: SHIFT_MODAL
+  };
+};
+
+exports.shiftModal = shiftModal;
+
+var getAppointments = function getAppointments(appointments) {
+  return {
+    type: GET_APPOINTMENTS,
+    appointments: appointments
+  };
+};
+
+exports.getAppointments = getAppointments;
+
+var addAppointments = function addAppointments(appointment) {
+  return {
+    type: ADD_APPOINTMENTS,
+    appointment: appointment
+  };
+};
+
+exports.addAppointments = addAppointments;
+
+var removeAppointment = function removeAppointment(id) {
+  return {
+    type: REMOVE_APPOINTMENT,
+    id: id
+  };
+};
+/**
+* THUNK CREATORS
+*/
+
+
+exports.removeAppointment = removeAppointment;
+
+var getAppointmentsThunk = function getAppointmentsThunk(year, month) {
+  return function (dispatch) {
+    return _axios.default.get("/api/appointments/".concat(year, "-").concat(month)).then(function (appointments) {
+      return dispatch(getAppointments(appointments.data));
+    }).catch(function (err) {
+      return console.log(err);
+    });
+  };
+};
+
+exports.getAppointmentsThunk = getAppointmentsThunk;
+
+var addAppointmentThunk = function addAppointmentThunk(body) {
+  return function (dispatch) {
+    return _axios.default.post('/api/appointments/', body).then(function (appointment) {
+      return dispatch(addAppointments(appointment.data));
+    }).catch(function (err) {
+      return console.log(err);
+    });
+  };
+};
+
+exports.addAppointmentThunk = addAppointmentThunk;
+
+var removeAppointmentThunk = function removeAppointmentThunk(id) {
+  return function (dispatch) {
+    return _axios.default.delete("/api/appointments/".concat(id)).then(function () {
+      return dispatch(removeAppointment(id));
+    }).then(function () {
+      return console.log('done');
+    }).catch(function (err) {
+      return console.log(err);
+    });
+  };
+};
+/**
+* REDUCER
+*/
+
+
+exports.removeAppointmentThunk = removeAppointmentThunk;
+
+function _default() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : calendar;
+  var action = arguments.length > 1 ? arguments[1] : undefined;
+
+  switch (action.type) {
+    case GET_PRESENT_DATE:
+      return Object.assign({}, state, {
+        presentDate: action.presentDate
+      });
+
+    case GET_MONTH:
+      return Object.assign({}, state, {
+        month: action.month
+      });
+
+    case GET_YEAR:
+      return Object.assign({}, state, {
+        year: action.year
+      });
+
+    case SHIFT_MODAL:
+      return Object.assign({}, state, {
+        modal: !state.modal
+      });
+
+    case GET_APPOINTMENTS:
+      return Object.assign({}, state, {
+        appointments: action.appointments
+      });
+
+    case ADD_APPOINTMENTS:
+      return Object.assign({}, state, {
+        appointments: state.appointments.concat(action.appointment)
+      });
+
+    case REMOVE_APPOINTMENT:
+      return Object.assign({}, state, {
+        appointments: state.appointments.filter(function (appointment) {
+          return appointment.id != action.id;
+        })
+      });
+
+    default:
+      return state;
+  }
+}
+
+/***/ }),
+
 /***/ "./CalendarFrontEnd/client/store/index.js":
 /*!************************************************!*\
   !*** ./CalendarFrontEnd/client/store/index.js ***!
@@ -645,15 +1021,15 @@ var _reduxThunk = _interopRequireDefault(__webpack_require__(/*! redux-thunk */ 
 
 var _reduxDevtoolsExtension = __webpack_require__(/*! redux-devtools-extension */ "./node_modules/redux-devtools-extension/index.js");
 
-var _user = _interopRequireDefault(__webpack_require__(/*! ./user */ "./CalendarFrontEnd/client/store/user.js"));
+var _calendar = _interopRequireDefault(__webpack_require__(/*! ./calendar */ "./CalendarFrontEnd/client/store/calendar.js"));
 
-Object.keys(_user).forEach(function (key) {
+Object.keys(_calendar).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
-      return _user[key];
+      return _calendar[key];
     }
   });
 });
@@ -661,7 +1037,7 @@ Object.keys(_user).forEach(function (key) {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var reducer = (0, _redux.combineReducers)({
-  user: _user.default
+  calendar: _calendar.default
 });
 var middleware = (0, _reduxDevtoolsExtension.composeWithDevTools)((0, _redux.applyMiddleware)(_reduxThunk.default, (0, _reduxLogger.default)({
   collapsed: true
@@ -672,10 +1048,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ "./CalendarFrontEnd/client/store/user.js":
-/*!***********************************************!*\
-  !*** ./CalendarFrontEnd/client/store/user.js ***!
-  \***********************************************/
+/***/ "./CalendarFrontEnd/client/utility.js":
+/*!********************************************!*\
+  !*** ./CalendarFrontEnd/client/utility.js ***!
+  \********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -685,113 +1061,132 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = _default;
-exports.logout = exports.auth = exports.me = void 0;
+exports.getTimeStart = exports.creatingTimeString = exports.creatingTimePart = exports.handleDaysPerMonth = exports.handleArrow = void 0;
 
-var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-var _history = _interopRequireDefault(__webpack_require__(/*! ../history */ "./CalendarFrontEnd/client/history.js"));
+var handleArrow = function handleArrow(event) {
+  console.log(_typeof(this.props.year), _typeof(this.props.month));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * ACTION TYPES
- */
-var GET_USER = 'GET_USER';
-var REMOVE_USER = 'REMOVE_USER';
-/**
- * INITIAL STATE
- */
-
-var defaultUser = {};
-/**
- * ACTION CREATORS
- */
-
-var getUser = function getUser(user) {
-  return {
-    type: GET_USER,
-    user: user
-  };
-};
-
-var removeUser = function removeUser() {
-  return {
-    type: REMOVE_USER
-  };
-};
-/**
- * THUNK CREATORS
- */
-
-
-var me = function me() {
-  return function (dispatch) {
-    return _axios.default.get('/auth/me').then(function (res) {
-      return dispatch(getUser(res.data || defaultUser));
-    }).catch(function (err) {
-      return console.log(err);
-    });
-  };
-};
-
-exports.me = me;
-
-var auth = function auth(email, password, method) {
-  return function (dispatch) {
-    return _axios.default.post("/auth/".concat(method), {
-      email: email,
-      password: password
-    }).then(function (res) {
-      dispatch(getUser(res.data));
-
-      _history.default.push('/home');
-    }, function (authError) {
-      // rare example: a good use case for parallel (non-catch) error handler
-      dispatch(getUser({
-        error: authError
-      }));
-    }).catch(function (dispatchOrHistoryErr) {
-      return console.error(dispatchOrHistoryErr);
-    });
-  };
-};
-
-exports.auth = auth;
-
-var logout = function logout() {
-  return function (dispatch) {
-    return _axios.default.post('/auth/logout').then(function (_) {
-      dispatch(removeUser());
-
-      _history.default.push('/login');
-    }).catch(function (err) {
-      return console.log(err);
-    });
-  };
-};
-/**
- * REDUCER
- */
-
-
-exports.logout = logout;
-
-function _default() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultUser;
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-
-  switch (action.type) {
-    case GET_USER:
-      return action.user;
-
-    case REMOVE_USER:
-      return defaultUser;
-
-    default:
-      return state;
+  if (event.target.className === 'next') {
+    if (this.props.month == 12) {
+      this.props.handleAppointments(this.props.year + 1, 1);
+      this.handleDaysPerMonth(this.props.year + 1, 1);
+      this.props.handleYear(this.props.year + 1);
+      this.props.handleMonth(1);
+    } else {
+      this.props.handleAppointments(this.props.year, this.props.month + 1);
+      this.handleDaysPerMonth(this.props.year, this.props.month + 1);
+      this.props.handleMonth(this.props.month + 1);
+    }
+  } else {
+    if (this.props.month == 1) {
+      if (this.props.year == 101) return alert('cannot keep track of events before year 101');
+      this.props.handleAppointments(this.props.year - 1, 12);
+      this.handleDaysPerMonth(this.props.year - 1, 12);
+      this.props.handleYear(this.props.year - 1);
+      this.props.handleMonth(12);
+    } else {
+      this.props.handleAppointments(this.props.year, this.props.month - 1);
+      this.handleDaysPerMonth(this.props.year, this.props.month - 1);
+      this.props.handleMonth(this.props.month - 1);
+    }
   }
-}
+};
+
+exports.handleArrow = handleArrow;
+
+var handleDaysPerMonth = function handleDaysPerMonth(year, month) {
+  var checkDate = new Date("".concat(year, ", ").concat(month, ", 1"));
+  console.log(month);
+  year = checkDate.getFullYear();
+  month = checkDate.getMonth();
+  var start = checkDate.getDay();
+  var daysPerMonths = this.state.daysPerMonths.slice(0);
+  console.log(month);
+  console.log(month - 1);
+  var daysInMonth = daysPerMonths[month];
+  var daysInPreMonth;
+  month - 1 > 0 ? daysInPreMonth = daysPerMonths[month - 1] : daysInPreMonth = daysPerMonths[11];
+  var preMonth = month + 1;
+  var nextMonth = month + 1;
+  var preYear = year;
+  var nextYear = year;
+
+  if (!(preMonth - 1)) {
+    preMonth = 12;
+    preYear = year - 1;
+  } else {
+    preMonth--;
+  }
+
+  if (nextMonth + 1 === 13) {
+    nextMonth = 1;
+    nextYear++;
+  } else {
+    nextMonth++;
+  }
+
+  if (month === 1 && year % 4 === 0) daysInMonth++;else if (month === 2 && year % 4 === 0) daysInPreMonth++;
+  var days = [];
+
+  for (var i = 0, j = 1; i < 35; i++) {
+    if (i < start) {
+      days.push([daysInPreMonth - start + i + 1, preYear, preMonth, 'not-present']);
+    } else if (j <= daysInMonth) {
+      days.push([j, year, month + 1, 'present']);
+      j++;
+    } else {
+      days.push([j % daysInMonth, nextYear, nextMonth, 'not-present']);
+      j++;
+    }
+  }
+
+  console.log(days);
+  this.setState({
+    days: days
+  });
+};
+
+exports.handleDaysPerMonth = handleDaysPerMonth;
+
+var creatingTimePart = function creatingTimePart(num) {
+  if (num.length !== 2) {
+    num = '0' + num;
+  }
+
+  return num;
+};
+
+exports.creatingTimePart = creatingTimePart;
+
+var creatingTimeString = function creatingTimeString(startH, startM, start, endH, endM, end) {
+  startH = creatingTimePart(startH.value);
+  startM = creatingTimePart(startM.value);
+  endH = creatingTimePart(endH.value);
+  endM = creatingTimePart(endM.value);
+  var timeString = "".concat(startH, ":").concat(startM).concat(start.value, " - ").concat(endH, ":").concat(endM).concat(end.value);
+  return timeString;
+}; //For comparing start Times to sort appointments on same day
+
+
+exports.creatingTimeString = creatingTimeString;
+
+var getTimeStart = function getTimeStart(appointment) {
+  var startTime = appointment.time.slice(0, 8);
+  var changedNumber = '';
+
+  for (var i = 0; i < startTime.length; i++) {
+    if (startTime[i] === ':') {} else {
+      changedNumber += startTime[i];
+    }
+  }
+
+  changedNumber = parseInt(changedNumber) % 1200;
+  return changedNumber;
+};
+
+exports.getTimeStart = getTimeStart;
 
 /***/ }),
 
