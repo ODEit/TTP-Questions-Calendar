@@ -9,7 +9,7 @@ For s = "2[b3[a]]", the output should be decodeString(s) = "baaabaaa"
  */
 
 //Researched a little online and saw that a stack could be useful
-//Also found a similar solution but modified it with more strings instead of arrays, joining and shifts
+
 
 //Helper function used to build out and return a string that has to be copied n times
 function helper (s,n){

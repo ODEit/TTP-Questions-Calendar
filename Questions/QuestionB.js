@@ -49,41 +49,36 @@
 
 
 
-//Below is the javascript solution I found. It implements a trie through creating nested objects
-
+// I looked up approaches online for making a trie and the nested object seemed pretty common
 function Trie() {
-    this.rootNode = {};
+    this.root = {};
 }
 
 Trie.prototype.addWord = function(word) {
 
-    var currentNode = this.rootNode;
-    var isNewWord = false;
+    let currentNode = this.root;
 
-    // Work downwards through the trie, adding nodes
-    // as needed, and keeping track of whether we add
-    // any nodes.
+    //for tracking if it is a new word
+    let isNewWord = false;
+
+    // work downwards through the trie, adding nodes as needed
     for (var i = 0; i < word.length; i++) {
-        var char = word[i];
 
         //nesting process. if the currentNode doesnt have a certain character 
         //it creates a key value pairing with the new character as the key and the 
         //value as another empty object
-        if (!currentNode.hasOwnProperty(char)) {
-            isNewWord = true;
-            currentNode[char] = {};
+        if (!currentNode.hasOwnProperty(word[i])) {
+            currentNode[word[i]] = {};
         }
 
-        currentNode = currentNode[char];
+        currentNode = currentNode[word[i]];
     }
 
-    // Explicitly mark the end of a word.
-    // Otherwise, we might say a word is
-    // present if it is a prefix of a different,
-    // longer word that was added earlier.
-    if (!currentNode.hasOwnProperty("End of Word")) {
-        isNewWord = true;
-        currentNode["End of Word"] = {};
+    // mark the end of a word
+    // if the end is already marked don't do anything and return isNewWord which would be false
+    if (!currentNode.hasOwnProperty("*")) {
+        isNewWord = true
+        currentNode["*"] = {};
     }
 
     return isNewWord;
